@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>VoteEase | Mini Voting System</title>
+    <meta name="description" content="VoteEase is a simple digital voting system for college elections with student authentication, one-vote-per-election enforcement, and election results.">
+    <meta name="robots" content="index, follow">
+
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'">
+
+<noscript>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</noscript>
+
+    <style>
+        :root {
+            --purple: #4f46e5;
+            --purple-light: #6366f1;
+            --violet: #a855f7;
+            --heading: #1f2937;
+            --text: #4b5563;
+            --soft-border: #e5e7eb;
+            --lavender: #ede9fe;
+
+            /* Shared radius system */
+            --radius-lg: 24px;
+            --radius-md: 18px;
+            --radius-pill: 999px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #ede9fe 0%, #e0d4fc 100%);
+            color: var(--heading);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .page-shell {
+            width: min(1180px, calc(100% - 32px));
+            margin: 28px auto;
+            background: linear-gradient(to bottom, #c4b5fd 0%, #ffffff 23%, #ffffff 100%);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+        }
+
+        .navbar-custom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 30px 48px 18px;
+        }
+
+        .logo {
+            color: var(--purple);
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 26px;
+        }
+
+        .nav-links a {
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a:focus-visible {
+            color: var(--purple);
+        }
+
+        .nav-active {
+            color: var(--purple) !important;
+            font-weight: 600 !important;
+        }
+
+        .hero {
+            padding: 72px 48px 76px;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            align-items: center;
+            gap: 55px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--purple);
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: var(--radius-pill);
+            padding: 7px 13px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            margin: 0;
+            max-width: 620px;
+            color: var(--heading);
+            font-size: clamp(36px, 5vw, 54px);
+            line-height: 1.12;
+            font-weight: 700;
+            letter-spacing: -1.5px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(90deg, var(--purple-light), var(--violet));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            max-width: 600px;
+            color: var(--text);
+            font-size: 16px;
+            line-height: 1.8;
+            margin: 20px 0 30px;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .primary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(to right, #6366f1, #a855f7);
+            color: white;
+            padding: 12px 25px;
+            border-radius: var(--radius-pill);
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 10px 22px rgba(99, 102, 241, 0.22);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .primary-btn:hover,
+        .primary-btn:focus-visible {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 14px 26px rgba(99, 102, 241, 0.28);
+        }
+
+        .secondary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--purple);
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #d8d4fe;
+            padding: 12px 25px;
+           border-radius: var(--radius-pill);
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .secondary-btn:hover,
+        .secondary-btn:focus-visible {
+            color: #3730a3;
+            border-color: #a5b4fc;
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+        }
+
+        .hero-card {
+            width: min(100%, 360px);
+            background: rgba(255, 255, 255, 0.78);
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            box-shadow: 0 20px 45px rgba(79, 70, 229, 0.12);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-icon {
+            width: 74px;
+            height: 74px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: white;
+            font-size: 30px;
+            margin-bottom: 22px;
+            box-shadow: 0 12px 25px rgba(99, 102, 241, 0.22);
+        }
+
+        .hero-card h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .hero-card p {
+            font-size: 13px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .mini-stat {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 0;
+            border-top: 1px solid #ececf3;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .mini-stat i {
+            width: 30px;
+            color: var(--purple);
+            text-align: center;
+        }
+
+        .section {
+            padding: 68px 48px;
+        }
+
+        .section-soft {
+            background: #fafaff;
+            border-top: 1px solid #f0eff8;
+            border-bottom: 1px solid #f0eff8;
+        }
+
+        .section-heading {
+            text-align: center;
+            margin-bottom: 38px;
+        }
+
+        .section-heading h2 {
+            margin-bottom: 8px;
+            color: var(--heading);
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .section-heading p {
+            max-width: 650px;
+            margin: 0 auto;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .election-card,
+        .step-card,
+        .feature-card {
+            height: 100%;
+            background: white;
+            border: 1px solid var(--soft-border);
+            border-radius: var(--radius-md);
+            box-shadow: 0 12px 30px rgba(31, 41, 55, 0.055);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .election-card:hover,
+        .step-card:hover,
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 35px rgba(31, 41, 55, 0.09);
+        }
+
+        .election-card {
+            padding: 24px;
+        }
+
+        .election-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .election-card h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+            border-radius: var(--radius-pill);
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        .status-upcoming {
+            color: #475569;
+            background: #e2e8f0;
+        }
+
+        .status-ended {
+            color: white;
+            background: #334155;
+        }
+
+        .election-card p {
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .full-btn {
+            width: 100%;
+        }
+
+        .empty-state {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 18px 22px;
+            text-align: center;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: var(--radius-md);
+        }
+
+        .empty-state-icon {
+            width: 46px;
+            height: 46px;
+            margin: 0 auto 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            color: var(--purple);
+            background: #eef2ff;
+            font-size: 18px;
+        }
+
+        .empty-state p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .step-card {
+            padding: 28px 22px;
+            text-align: center;
+        }
+
+        .step-icon {
+            width: 62px;
+            height: 62px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 17px;
+            border-radius: var(--radius-md);
+            color: var(--purple);
+            background: #eef2ff;
+            font-size: 24px;
+        }
+
+        .step-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .step-card p {
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        .feature-card {
+            padding: 20px;
+        }
+
+        .feature-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+            height: 100%;
+            text-align: center;
+        }
+
+        .feature-icon {
+            flex: 0 0 54px;
+            width: 54px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            color: var(--purple);
+            background: #eef2ff;
+            font-size: 21px;
+        }
+
+        .feature-copy {
+            width: 100%;
+        }
+
+        .feature-card h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin: 1px 0 5px;
+        }
+
+        .feature-card p {
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.65;
+            max-width: 250px;
+            margin: 0 auto;
+        }
+
+        .about-card {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 34px 38px;
+            text-align: center;
+            background: linear-gradient(135deg, #fafaff, #ffffff);
+            border: 1px solid #e4e1f5;
+            border-radius: var(--radius-md);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        }
+
+        .about-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .about-card p {
+            max-width: 760px;
+            margin: 0 auto;
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .footer {
+            padding: 24px 48px 30px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        /* Multi-Stage Stepper & Governance Options */
+        .stage-stepper-box {
+            background: #f0f5ff;
+            border-radius: 999px;
+            padding: 14px 24px;
+            max-width: 900px;
+            margin: 0 auto 36px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .stepper-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .step-pill-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 18px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .step-pill-btn.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .step-pill-btn.inactive {
+            background: white;
+            color: #4b5563;
+            border: 1px solid #e2e8f0;
+        }
+
+        .step-pill-btn.inactive:hover {
+            color: #1e293b;
+            background: #f8fafc;
+        }
+
+        .arrow-sep {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .gov-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            padding: 28px 24px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+
+        .gov-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        }
+
+        .gov-card.highlight {
+            border: 2px solid #f59e0b;
+        }
+
+        .orange-badge {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #ea580c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .gov-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .gov-card p {
+            color: #4b5563;
+            font-size: 13px;
+            line-height: 1.65;
+            margin-bottom: 24px;
+        }
+
+        .gov-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid #f3f4f6;
+            margin-top: auto;
+        }
+
+        .gov-tag {
+            background: #f1f5f9;
+            color: #334155;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 999px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .gov-link {
+            color: #ea580c;
+            font-weight: 600;
+            font-size: 13px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: gap 0.2s;
+        }
+
+        .gov-link:hover {
+            color: #c2410c;
+            gap: 7px;
+        }
+
+        :focus-visible {
+            outline: 3px solid rgba(99, 102, 241, 0.35);
+            outline-offset: 3px;
+        }
+
+        /* Dedicated Candidate & Department Module Showcase */
+        .module-showcase-card {
+            background: #ffffff;
+            border-radius: 22px;
+            padding: 32px 28px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-showcase-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(79, 70, 229, 0.15);
+        }
+
+        .module-accent-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+        }
+
+        .accent-candidate {
+            background: linear-gradient(90deg, #f59e0b, #ea580c);
+        }
+
+        .accent-dept {
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+        }
+
+        .module-icon-wrap {
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin-bottom: 18px;
+        }
+
+        .icon-wrap-candidate {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .icon-wrap-dept {
+            background: #e0f2fe;
+            color: #0284c7;
+        }
+
+        .module-feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: #4b5563;
+            margin-bottom: 10px;
+        }
+
+        .module-feature-item i {
+            margin-top: 3px;
+            font-size: 14px;
+        }
+
+        .nav-badge-link {
+            background: linear-gradient(135deg, #f59e0b, #ea580c) !important;
+            color: white !important;
+            padding: 6px 14px !important;
+            border-radius: 999px !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-badge-link:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 900px) {
+            .page-shell {
+                width: min(100% - 20px, 760px);
+                margin: 10px auto;
+                border-radius: var(--radius-md);
+            }
+
+            .navbar-custom {
+                padding: 24px 28px 10px;
+            }
+
+            .hero,
+            .section {
+                padding-left: 28px;
+                padding-right: 28px;
+            }
+
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 35px;
+            }
+
+            .hero-copy {
+                text-align: center;
+            }
+
+            .hero h1,
+            .hero p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-actions {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                order: -1;
+            }
+
+            .hero-card {
+                max-width: 430px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .navbar-custom {
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .nav-links {
+                gap: 12px;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+
+            .nav-links a {
+                font-size: 12px;
+            }
+
+            .hero {
+                padding-top: 48px;
+                padding-bottom: 55px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero p {
+                font-size: 14px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+            }
+
+            .primary-btn,
+            .secondary-btn {
+                width: 100%;
+            }
+
+            .section {
+                padding-top: 50px;
+                padding-bottom: 50px;
+            }
+
+            .section-heading h2 {
+                font-size: 24px;
+            }
+
+            .about-card {
+                padding: 27px 20px;
+            }
+
+            .footer {
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page-shell">
+
+    <!-- NAVIGATION -->
+    <nav class="navbar-custom" aria-label="Main navigation">
+        <a class="logo" href="{{ url_for('home') }}" aria-label="VoteEase home">
+    VoteEase
+</a>
+
+        <div class="nav-links">
+            <a class="nav-active"
+               href="{{ url_for('home') }}"
+               aria-current="page">
+                Home
+            </a>
+
+            <a href="{{ url_for('departments') }}">
+                <i class="fa-solid fa-building-columns me-1"></i>Departments
+            </a>
+
+            <a href="{{ url_for('department_login') }}" class="nav-badge-link" style="background:#e0e7ff;color:#3730a3;border-color:#c7d2fe;">
+                <i class="fa-solid fa-graduation-cap me-1"></i>Dept Portal
+            </a>
+
+            <a href="{{ url_for('candidates') }}">
+                <i class="fa-solid fa-users me-1"></i>Candidates
+            </a>
+
+            <a href="{{ url_for('candidate_register') }}" class="nav-badge-link">
+                <i class="fa-solid fa-user-plus"></i> Candidate Register
+            </a>
+
+            <a href="{{ url_for('results') }}">Results</a>
+
+            <a href="{{ url_for('login') }}">Voter Login</a>
+
+            <a href="{{ url_for('admin') }}">Admin Login</a>
+        </div>
+    </nav>
+
+
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-grid">
+
+            <div class="hero-copy">
+                <div class="eyebrow">
+                    <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                    College Digital Voting
+                </div>
+
+                <h1 id="hero-title">
+                    Secure, Simple,
+                    <span>One Vote at a Time.</span>
+                </h1>
+
+                <p>
+                    VoteEase makes college elections simple and accessible.
+                    Sign in with your voter credentials, cast your vote,
+                    and follow election results with a clear and reliable
+                    voting experience.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="{{ url_for('login') }}" class="primary-btn">
+                        <i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i>
+                        Voter Login
+                    </a>
+
+                    <a href="{{ url_for('department_login') }}" class="secondary-btn" style="border-color: #6366f1; color: #4338ca; background: #e0e7ff;">
+                        <i class="fa-solid fa-graduation-cap" aria-hidden="true"></i>
+                        Department Portal
+                    </a>
+
+                    <a href="{{ url_for('candidate_register') }}" class="secondary-btn" style="border-color: #f59e0b; color: #b45309; background: #fffbeb;">
+                        <i class="fa-solid fa-user-check" aria-hidden="true"></i>
+                        Candidate Register (75% Req.)
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="hero-card">
+                    <div class="hero-icon">
+                        <i class="fa-solid fa-check-to-slot" aria-hidden="true"></i>
+                    </div>
+
+                    <h2>Simple digital elections</h2>
+
+                    <p>
+                        A focused college voting workflow built around
+                        authentication, election timing, candidate selection,
+                        and result calculation.
+                    </p>
+
+                    <div class="mini-stat">
+                        <i class="fa-solid fa-user-check" aria-hidden="true"></i>
+                        <span>Voter authentication</span>
+                    </div>
+
+                    <div class="mini-stat">
+                        <i class="fa-solid fa-check-double" aria-hidden="true"></i>
+                        <span>One vote per election</span>
+                    </div>
+
+                    <div class="mini-stat">
+                        <i class="fa-solid fa-chart-column" aria-hidden="true"></i>
+                        <span>Election results</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- SEPARATE CANDIDATE & DEPARTMENT MODULES SECTION -->
+    <section class="section" id="campus-modules" style="padding-top: 20px; padding-bottom: 50px;">
+        <div class="section-heading">
+            <span class="badge bg-primary-subtle text-primary border border-primary px-3 py-1 rounded-pill small mb-2 d-inline-block">
+                <i class="fa-solid fa-layer-group me-1"></i> Core Campus Portals
+            </span>
+            <h2>Candidate &amp; Department Modules</h2>
+            <p>Directly access dedicated institutional options: Candidate Self-Registration (with attendance check &amp; OTP) and Academic Department directories.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- CANDIDATE MODULE CARD -->
+            <div class="col-md-6">
+                <div class="module-showcase-card">
+                    <div class="module-accent-bar accent-candidate"></div>
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="module-icon-wrap icon-wrap-candidate">
+                                <i class="fa-solid fa-user-tie"></i>
+                            </div>
+                            <span class="badge bg-warning-subtle text-dark border border-warning px-3 py-1 rounded-pill fw-bold">
+                                75% Attendance Required
+                            </span>
+                        </div>
+
+                        <h3 class="fs-4 fw-bold text-dark mb-2">🎓 Candidate Module</h3>
+                        <p class="text-muted small mb-3">
+                            Complete portal for prospective student candidates to check eligibility, complete OTP verification, choose categorized positions, and file nominations.
+                        </p>
+
+                        <div class="mb-4">
+                            <div class="module-feature-item">
+                                <i class="fa-solid fa-circle-check text-success"></i>
+                                <span><strong>75% Attendance Check:</strong> Real-time minimum 75% academic attendance check required before nomination submission.</span>
+                            </div>
+                            <div class="module-feature-item">
+                                <i class="fa-solid fa-shield-halved text-warning"></i>
+                                <span><strong>OTP Generation &amp; Verification:</strong> 6-digit one-time password security confirmation.</span>
+                            </div>
+                            <div class="module-feature-item">
+                                <i class="fa-solid fa-id-badge text-primary"></i>
+                                <span><strong>Position Categories:</strong> Executive Council, Department Rep, Cultural &amp; Sports Secretary.</span>
+                            </div>
+                            <div class="module-feature-item">
+                                <i class="fa-solid fa-users-viewfinder text-info"></i>
+                                <span><strong>Candidate Directory:</strong> Browse approved candidates, view campaign manifestos, and see voter bios.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 flex-wrap pt-3 border-top">
+                        <a href="{{ url_for('candidate_register') }}" class="primary-btn" style="background: linear-gradient(to right, #ea580c, #f59e0b); flex: 1; text-align: center;">
+                            <i class="fa-solid fa-user-plus me-1"></i> Register as Candidate
+                        </a>
+                        <a href="{{ url_for('candidates') }}" class="secondary-btn" style="flex: 1; text-align: center;">
+                            <i class="fa-solid fa-users me-1"></i> Browse Candidates
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DEPARTMENT MODULE CARD -->
+            <div class="col-md-6">
+                <div class="module-showcase-card">
+                    <div class="module-accent-bar accent-dept"></div>
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="module-icon-wrap icon-wrap-dept">
+                                <i class="fa-solid fa-building-columns"></i>
+                            </div>
+                            <span class="badge bg-info-subtle text-primary border border-info px-3 py-1 rounded-pill fw-bold">
+                                Academic Faculties
+                            </span>
+                        </div>
+
+                        <h3 class="fs-4 fw-bold text-dark mb-2">🏢 Department Module</h3>
+                        <p class="text-muted small mb-3">
+                            Explore college academic departments, faculty representations, student enrollment numbers, and departmental elections.
+                        </p>
+
+                        <div class="mb-4">
+                            <div class="module-feature-item">
+                                <i class="fa-solid fa-laptop-code text-primary"></i>
+                                <span><strong>Academic Divisions:</strong> Computer Science, Electronics, Mechanical, Civil &amp; AI/DS.</span>
+                            </div>
+                            <div class="module-feature-item">
+                                <i class="fa-solid fa-chart-simple text-info"></i>
+                                <span><strong>Student Quotas:</strong> Capacity limits, enrolled voter percentages, and seat allocations.</span>
+                            </div>
+                            <div class="module-feature-item">
+                                <i class="fa-solid fa-landmark text-secondary"></i>
+                                <span><strong>Department Reps:</strong> Tailored representation addressing department-specific concerns.</span>
+                            </div>
+                            <div class="module-feature-item">
+                                <i class="fa-solid fa-sliders text-success"></i>
+                                <span><strong>Admin Controls:</strong> Add, edit, and organize departments via the administration console.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 flex-wrap pt-3 border-top">
+                        <a href="{{ url_for('departments') }}" class="primary-btn" style="background: linear-gradient(to right, #0284c7, #2563eb); flex: 1; text-align: center;">
+                            <i class="fa-solid fa-building-columns me-1"></i> Explore Departments
+                        </a>
+                        <a href="{{ url_for('department_login') }}" class="secondary-btn" style="border-color:#6366f1;color:#4338ca;background:#e0e7ff; flex: 1; text-align: center;">
+                            <i class="fa-solid fa-graduation-cap me-1"></i> Dept Coordinator Portal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- MULTI-STAGE GOVERNANCE & ELECTIONS -->
+    <section class="section section-soft" id="elections" aria-labelledby="elections-title">
+        <div class="section-heading">
+            <h2 id="elections-title">Multi-Round Campus Election Stages</h2>
+            <p>From Class Representatives (CR) to University Executive Council — winners advance to subsequent democratic tiers!</p>
+        </div>
+
+        <!-- PROGRESSION STEPPER (MATCHING USER SCREENSHOT) -->
+        <div class="stage-stepper-box">
+            <div class="stepper-row">
+                <a href="#stage-1" class="step-pill-btn active">
+                    🎓 Step 1: Class Election (CR)
+                </a>
+                <span class="arrow-sep">→</span>
+                <a href="#stage-2" class="step-pill-btn inactive">
+                    📑 Step 2: Department Election
+                </a>
+                <span class="arrow-sep">→</span>
+                <a href="#stage-3" class="step-pill-btn inactive">
+                    🏛️ Step 3: University Council
+                </a>
+            </div>
+            <div class="text-center mt-2">
+                <a href="#stage-4" class="step-pill-btn inactive">
+                    📋 Step 4: Campus Policies & Committees
+                </a>
+            </div>
+        </div>
+
+        <!-- 4 INDIVIDUAL GOVERNANCE CARDS (MATCHING USER SCREENSHOT) -->
+        <div class="row g-4 mb-5">
+            <!-- Option 1 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="gov-card">
+                    <div>
+                        <div class="orange-badge">1</div>
+                        <h3>Student Body Representation</h3>
+                        <p>
+                            From electing student council members to forming committees, eVoting ensures a seamless and secure democratic process across different levels of student governance.
+                        </p>
+                    </div>
+                    <div class="gov-card-footer">
+                        <span class="gov-tag">EXECUTIVE COUNCIL</span>
+                        <a href="{{ url_for('login') }}" class="gov-link">
+                            Vote Council →
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 2 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="gov-card">
+                    <div>
+                        <div class="orange-badge">2</div>
+                        <h3>Committee Elections</h3>
+                        <p>
+                            Student bodies often have committees overseeing various aspects of campus life and eVoting ensures efficient and inclusive elections for these roles.
+                        </p>
+                    </div>
+                    <div class="gov-card-footer">
+                        <span class="gov-tag">CAMPUS COMMITTEES</span>
+                        <a href="{{ url_for('login') }}" class="gov-link">
+                            Vote Committees →
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 3 (Highlighted) -->
+            <div class="col-md-6 col-lg-3">
+                <div class="gov-card highlight">
+                    <div>
+                        <div class="orange-badge">3</div>
+                        <h3>Departmental Representative</h3>
+                        <p>
+                            Elections at the departmental level allow tailored representation and address unique challenges faced by students in different academic disciplines.
+                        </p>
+                    </div>
+                    <div class="gov-card-footer">
+                        <span class="gov-tag">ACADEMIC FACULTY</span>
+                        <a href="{{ url_for('login') }}" class="gov-link">
+                            Vote Department →
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 4 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="gov-card">
+                    <div>
+                        <div class="orange-badge">4</div>
+                        <h3>Voting on Campus Policies</h3>
+                        <p>
+                            Decision-making involves voting on policies that affect campus life, academic programs, extracurricular activities and student services.
+                        </p>
+                    </div>
+                    <div class="gov-card-footer">
+                        <span class="gov-tag">CAMPUS REFERENDUM</span>
+                        <a href="{{ url_for('login') }}" class="gov-link">
+                            Vote Policies →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIVE BALLOT BOOTHS -->
+        <div class="text-center mb-4">
+            <h3 class="fw-bold mb-1">Live Institutional Ballots</h3>
+            <p class="text-muted small">Cast your vote in active rounds across campus departments and tiers.</p>
+        </div>
+
+        {% if active_elections %}
+            <div class="row g-4">
+                {% for election in active_elections %}
+                    <div class="col-md-6 col-lg-3" id="stage-{{ election.stage }}">
+                        <article class="election-card">
+                            <div class="election-top">
+                                <div>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary px-2 py-1 rounded-pill small mb-2 d-inline-block">
+                                        {{ election.stage_info.badge }}: {{ election.category_name }}
+                                    </span>
+                                    <h3 class="fs-6 fw-bold mb-1">{{ election.name }}</h3>
+                                </div>
+                                <span class="status status-active">Active</span>
+                            </div>
+
+                            <p class="small text-muted mb-3">
+                                {{ election.description or "Participate in this active college democratic voting round." }}
+                            </p>
+
+                            <a href="{{ url_for('login') }}" class="primary-btn full-btn">
+                                <i class="fa-solid fa-check-to-slot" aria-hidden="true"></i>
+                                Login to Vote
+                            </a>
+                        </article>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fa-regular fa-calendar-xmark" aria-hidden="true"></i>
+                </div>
+                <p>No active elections right now. Check back soon.</p>
+            </div>
+        {% endif %}
+    </section>
+
+
+    <!-- HOW IT WORKS -->
+    <section class="section" aria-labelledby="how-title">
+        <div class="section-heading">
+            <h2 id="how-title">How It Works</h2>
+            <p>Three simple steps to participate in a college election.</p>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <article class="step-card">
+                    <div class="step-icon">
+                        <i class="fa-solid fa-id-card" aria-hidden="true"></i>
+                    </div>
+                    <h3>1. Login</h3>
+                    <p>
+                        Sign in securely using your College ID and password.
+                    </p>
+                </article>
+            </div>
+
+            <div class="col-md-4">
+                <article class="step-card">
+                    <div class="step-icon">
+                        <i class="fa-solid fa-check-to-slot" aria-hidden="true"></i>
+                    </div>
+                    <h3>2. Vote</h3>
+                    <p>
+                        View the active election, select a candidate,
+                        and cast your vote once.
+                    </p>
+                </article>
+            </div>
+
+            <div class="col-md-4">
+                <article class="step-card">
+                    <div class="step-icon">
+                        <i class="fa-solid fa-chart-column" aria-hidden="true"></i>
+                    </div>
+                    <h3>3. Results</h3>
+                    <p>
+                        View election results after voting officially closes.
+                    </p>
+                </article>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- FEATURES -->
+    <section class="section section-soft" aria-labelledby="features-title">
+        <div class="section-heading">
+            <h2 id="features-title">Platform Features</h2>
+            <p>Core functionality behind the VoteEase experience.</p>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-md-6 col-lg-4 d-flex">
+                <article class="feature-card w-100">
+                    <div class="feature-inner">
+                        <div class="feature-icon">
+                            <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                        </div>
+                        <div class="feature-copy">
+                            <h3>Password Hashing</h3>
+                            <p>
+                                Voter passwords are securely stored using modern
+                                cryptographic password hashing.
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-6 col-lg-4 d-flex">
+                <article class="feature-card w-100">
+                    <div class="feature-inner">
+                        <div class="feature-icon">
+                            <i class="fa-solid fa-database" aria-hidden="true"></i>
+                        </div>
+                        <div class="feature-copy">
+                            <h3>One Vote Per Voter</h3>
+                            <p>
+                                The database enforces a unique voter and
+                                election vote record per tier.
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-6 col-lg-4 d-flex">
+                <article class="feature-card w-100">
+                    <div class="feature-inner">
+                        <div class="feature-icon">
+                            <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                        </div>
+                        <div class="feature-copy">
+                            <h3>Time-Controlled Elections</h3>
+                            <p>
+                                Elections are available according to their
+                                configured start and end times.
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-6 col-lg-4 d-flex">
+                <article class="feature-card w-100">
+                    <div class="feature-inner">
+                        <div class="feature-icon">
+                            <i class="fa-solid fa-chart-pie" aria-hidden="true"></i>
+                        </div>
+                        <div class="feature-copy">
+                            <h3>Automatic Results</h3>
+                            <p>
+                                Vote totals are calculated from recorded votes
+                                after an election ends.
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-6 col-lg-4 d-flex">
+                <article class="feature-card w-100">
+                    <div class="feature-inner">
+                        <div class="feature-icon">
+                            <i class="fa-solid fa-ban" aria-hidden="true"></i>
+                        </div>
+                        <div class="feature-copy">
+                            <h3>No-Cache Voting Pages</h3>
+                            <p>
+                                Voting responses use no-store cache headers
+                                to reduce stale-page behavior.
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-6 col-lg-4 d-flex">
+                <article class="feature-card w-100">
+                    <div class="feature-inner">
+                        <div class="feature-icon">
+                            <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+                        </div>
+                        <div class="feature-copy">
+                            <h3>Department &amp; Admin Management</h3>
+                            <p>
+                                Departments govern voters and candidates,
+                                while admin manages overall institutional departments.
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- ABOUT -->
+    <section class="section" aria-labelledby="about-title">
+        <div class="about-card">
+            <h2 id="about-title">About VoteEase</h2>
+            <p>
+                VoteEase is an academic mini project demonstrating digital
+                voting logic using Flask and SQLite, with authentication,
+                backend validation, election management, and one-vote
+                enforcement.
+            </p>
+        </div>
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer class="footer">
+    VoteEase · Mini Voting System
+</footer>
+
+</div>
+
+</body>
+</html>

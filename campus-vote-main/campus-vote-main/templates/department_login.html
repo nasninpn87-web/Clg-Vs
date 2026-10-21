@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Department Portal Login | VoteEase</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.main-container {
+    background: rgba(255, 255, 255, 0.96);
+    width: 100%;
+    max-width: 980px;
+    border-radius: 24px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.35);
+    padding: 40px 55px;
+    position: relative;
+    overflow: hidden;
+}
+
+.navbar-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 20px;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 20px;
+    color: #4338ca;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.nav-links a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #4b5563;
+    font-weight: 500;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: #4338ca;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    align-items: center;
+    gap: 45px;
+}
+
+.hero-text h1 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.25;
+}
+
+.hero-text h1 span {
+    background: linear-gradient(135deg, #4f46e5, #9333ea);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-text p {
+    color: #475569;
+    margin: 15px 0 25px;
+    font-size: 0.95rem;
+}
+
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #e0e7ff;
+    color: #3730a3;
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 15px;
+}
+
+.features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 25px;
+}
+
+.features-list li {
+    font-size: 0.88rem;
+    color: #334155;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.features-list li i {
+    color: #10b981;
+}
+
+.form-card {
+    background: #ffffff;
+    padding: 35px 30px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(99,102,241,0.12);
+    border: 1px solid #e0e7ff;
+}
+
+.input-group-custom {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-group-custom i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #818cf8;
+}
+
+.input-group-custom input,
+.input-group-custom select {
+    width: 100%;
+    padding: 13px 15px 13px 45px;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    outline: none;
+    font-family: inherit;
+    font-size: 0.92rem;
+    transition: all 0.2s;
+    background: #fff;
+}
+
+.input-group-custom input:focus,
+.input-group-custom select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    padding: 13px 25px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    font-size: 15px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(79,70,229,0.3);
+    color: white;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 22px;
+    font-size: 13px;
+}
+
+.form-actions a {
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.form-actions a:hover {
+    color: #4338ca;
+}
+
+.helper-note {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 15px;
+    text-align: center;
+}
+
+@media(max-width: 860px) {
+    .content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="main-container">
+
+    <div class="navbar-custom">
+        <a href="{{ url_for('home') }}" class="logo">
+            <i class="fas fa-check-to-slot"></i> VoteEase
+        </a>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}"><i class="fas fa-house me-1"></i>Home</a>
+            <a href="{{ url_for('departments') }}"><i class="fas fa-building-columns me-1"></i>Departments</a>
+            <a href="{{ url_for('login') }}"><i class="fas fa-user-check me-1"></i>Voter Login</a>
+            <a href="{{ url_for('admin') }}"><i class="fas fa-user-shield me-1"></i>Admin</a>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <div class="hero-text">
+            <div class="role-badge">
+                <i class="fas fa-building-columns"></i> Department Coordinator Portal
+            </div>
+            <h1>Manage Your <span>Department Voting</span></h1>
+            <p>
+                Each academic department independently governs its candidate nominations,
+                voter roll, and election stages. Log in with your department credentials to proceed.
+            </p>
+
+            <ul class="features-list">
+                <li><i class="fas fa-check-circle"></i> Approve & manage departmental candidate nominations</li>
+                <li><i class="fas fa-check-circle"></i> Register and maintain department voter records</li>
+                <li><i class="fas fa-check-circle"></i> Oversee Class (CR) and Department election processes</li>
+                <li><i class="fas fa-check-circle"></i> Track real-time department voter turnout</li>
+            </ul>
+        </div>
+
+        <div class="form-card">
+            <h5 class="fw-bold mb-3" style="color: #0f172a;">
+                <i class="fas fa-id-card-clip text-primary me-2"></i>Department Sign In
+            </h5>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for cat, m in messages %}
+                <div class="alert alert-{{ cat if cat != 'message' else 'info' }} py-2 small mb-3">
+                    {{ m | safe }}
+                </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('department_login') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-muted">Select Academic Department</label>
+                    <div class="input-group-custom mb-0">
+                        <i class="fas fa-building-columns"></i>
+                        <select name="dept_id" required>
+                            <option value="">-- Choose Department --</option>
+                            {% for d in departments %}
+                            <option value="{{ d.id }}">{{ d.name }} ({{ d.code }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-muted">Department Coordinator Password</label>
+                    <div class="input-group-custom mb-0">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" name="password" placeholder="Access Password" required>
+                    </div>
+                </div>
+
+                <button class="primary-btn" type="submit">
+                    <i class="fas fa-right-to-bracket"></i> Access Department Dashboard
+                </button>
+
+                <div class="helper-note">
+                    <i class="fas fa-key text-warning me-1"></i> Default coordinator password: <strong>dept123</strong>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ url_for('login') }}">
+                        <i class="fas fa-user-check"></i> Voter Login
+                    </a>
+                    <a href="{{ url_for('admin') }}">
+                        <i class="fas fa-shield-halved"></i> Central Admin
+                    </a>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

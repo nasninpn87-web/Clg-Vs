@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OTP Verification | VoteEase Candidate</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ede9fe 0%, #dbeafe 100%);
+    min-height: 100vh;
+  }
+  .top-nav {
+    background: rgba(15,23,42,0.95);
+    backdrop-filter: blur(12px);
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+  }
+  .nav-brand {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .nav-brand span {
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-section {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+    padding: 60px 20px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-section h1 { font-size: 2.5rem; font-weight: 700; color: #fff; position: relative; }
+  .hero-section p { color: rgba(255,255,255,0.7); position: relative; }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(99,102,241,0.2);
+    border: 1px solid rgba(99,102,241,0.4);
+    color: #a5b4fc;
+    padding: 6px 18px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .main-wrapper {
+    max-width: 720px;
+    margin: -40px auto 60px;
+    padding: 0 20px;
+    position: relative;
+    z-index: 10;
+  }
+  .glass-card {
+    background: rgba(255,255,255,0.97);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(99,102,241,0.15), 0 4px 20px rgba(0,0,0,0.08);
+    padding: 40px;
+    border: 1px solid rgba(255,255,255,0.8);
+    margin-bottom: 24px;
+  }
+  .otp-inputs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 28px 0;
+  }
+  .otp-box {
+    width: 56px;
+    height: 64px;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #6366f1;
+    transition: all 0.25s;
+    font-family: 'Poppins', sans-serif;
+  }
+  .otp-box:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.15);
+    outline: none;
+  }
+  .hidden-otp { display: none; }
+  .form-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .form-control, .form-select {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.25s;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.12);
+    outline: none;
+  }
+  .btn-primary-custom {
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 14px 36px;
+    border-radius: 14px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+  }
+  .btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(99,102,241,0.4);
+    color: white;
+  }
+  .info-banner {
+    background: linear-gradient(135deg, #fef3c7, #fef9c3);
+    border: 1px solid #fcd34d;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .student-card {
+    background: linear-gradient(135deg, #f0f9ff, #f0fdf4);
+    border: 1px solid #bae6fd;
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+  }
+  .steps-track {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 32px;
+  }
+  .step-item { flex: 1; text-align: center; }
+  .step-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    font-weight: 700;
+  }
+  .step-done .step-circle {
+    background: #d1fae5;
+    color: #059669;
+    border: 2px solid #6ee7b7;
+  }
+  .step-active .step-circle {
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: white;
+    box-shadow: 0 6px 20px rgba(99,102,241,0.4);
+  }
+  .step-inactive .step-circle { background: #e2e8f0; color: #94a3b8; }
+  .step-label { font-size: 0.75rem; font-weight: 600; color: #64748b; }
+  .step-done .step-label { color: #059669; }
+  .step-active .step-label { color: #6366f1; }
+  .step-connector { width: 60px; height: 3px; background: #e2e8f0; flex-shrink: 0; }
+  .step-connector.done { background: linear-gradient(90deg, #6ee7b7, #6366f1); }
+  .alert { border-radius: 14px; padding: 14px 18px; font-size: 0.9rem; }
+  .photo-upload-area {
+    border: 2px dashed #c4b5fd;
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #faf5ff;
+    position: relative;
+  }
+  .photo-upload-area:hover {
+    border-color: #6366f1;
+    background: #f5f3ff;
+  }
+  .photo-upload-area input[type="file"] {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+  #photoPreview {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 14px;
+    display: none;
+    margin: 10px auto 0;
+    object-fit: cover;
+  }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a class="nav-brand" href="{{ url_for('home') }}">
+    <i class="fas fa-vote-yea"></i>
+    <span>VoteEase</span>
+  </a>
+</nav>
+
+<div class="hero-section">
+  <div class="hero-badge">
+    <i class="fas fa-shield-alt"></i>
+    OTP VERIFICATION
+  </div>
+  <h1>Verify Your Identity</h1>
+  <p>Enter the OTP and complete your candidate profile submission.</p>
+</div>
+
+<div class="main-wrapper">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="alert alert-{{ cat }} mb-4">{{ msg | safe }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="glass-card">
+
+    <!-- Steps -->
+    <div class="steps-track">
+      <div class="step-item step-done">
+        <div class="step-circle"><i class="fas fa-check"></i></div>
+        <div class="step-label">Eligibility Check</div>
+      </div>
+      <div class="step-connector done"></div>
+      <div class="step-item step-active">
+        <div class="step-circle"><i class="fas fa-shield-alt"></i></div>
+        <div class="step-label">OTP Verification</div>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step-item step-inactive">
+        <div class="step-circle"><i class="fas fa-check-circle"></i></div>
+        <div class="step-label">Profile Submission</div>
+      </div>
+    </div>
+
+    <!-- Voter Info Banner -->
+    <div class="student-card">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <div class="fw-bold" style="color:#1e293b; font-size:1rem;">
+            <i class="fas fa-id-card-clip text-primary me-2"></i>
+            Voter: {{ cand_info.college_id }}
+          </div>
+          <div class="text-muted" style="font-size:0.85rem;">{{ cand_info.department }}</div>
+        </div>
+        <div class="text-end">
+          <span class="badge rounded-pill px-3 py-2"
+                style="background: linear-gradient(135deg, #22c55e, #16a34a); color:white; font-size:0.85rem;">
+            <i class="fas fa-chart-line me-1"></i>
+            Attendance: {{ cand_info.attendance | round(1) }}%
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {% if election %}
+    <div class="info-banner">
+      <i class="fas fa-info-circle text-amber-600 mt-1" style="color:#d97706;"></i>
+      <div>
+        <strong>Contesting for:</strong> {{ election.name }}<br>
+        <small class="text-muted">Category: {{ election.category_name }} &bull; {{ election.stage_info.badge }}</small>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- OTP + Profile Form -->
+    <form method="POST" action="{{ url_for('candidate_verify_otp') }}" enctype="multipart/form-data" id="otpForm">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="otp" id="hiddenOtp" class="hidden-otp">
+
+      <!-- Candidate Full Name -->
+      <div class="mb-4">
+        <label class="form-label"><i class="fas fa-user me-1"></i> Candidate Full Name <span class="text-danger">*</span></label>
+        <input type="text" name="candidate_name" class="form-control" placeholder="e.g. Alex Johnson" required
+               value="{{ cand_info.student_name if cand_info.student_name and cand_info.student_name != cand_info.college_id else '' }}">
+        <div class="form-text">Your name as it should appear on ballots.</div>
+      </div>
+
+      <!-- OTP Input -->
+      <div class="mb-4">
+        <label class="form-label text-center d-block mb-3">
+          <i class="fas fa-key me-1"></i> Enter 6-Digit OTP <span class="text-danger">*</span>
+        </label>
+        <div class="otp-inputs" id="otpInputs">
+          <input class="otp-box" name="otp_1" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" required autocomplete="off">
+          <input class="otp-box" name="otp_2" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" required autocomplete="off">
+          <input class="otp-box" name="otp_3" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" required autocomplete="off">
+          <input class="otp-box" name="otp_4" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" required autocomplete="off">
+          <input class="otp-box" name="otp_5" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" required autocomplete="off">
+          <input class="otp-box" name="otp_6" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" required autocomplete="off">
+        </div>
+        <p class="text-center text-muted small">
+          <i class="fas fa-info-circle me-1"></i>
+          The OTP was shown on the previous screen in the confirmation banner.
+        </p>
+      </div>
+
+      <hr class="my-4">
+
+      <!-- Position Title -->
+      <div class="mb-3">
+        <label class="form-label"><i class="fas fa-medal me-1"></i> Position You Are Contesting For <span class="text-danger">*</span></label>
+        <select name="position_title" class="form-select" required>
+          <option value="" disabled selected>Select a position...</option>
+          {% if election and election.position_titles %}
+            {% for pos in election.position_titles %}
+              <option value="{{ pos }}">{{ pos }}</option>
+            {% endfor %}
+          {% else %}
+            <option value="Representative">Representative</option>
+            <option value="Secretary">Secretary</option>
+            <option value="Committee Head">Committee Head</option>
+            <option value="General Delegate">General Delegate</option>
+          {% endif %}
+        </select>
+        <div class="form-text">This title will appear on your candidate profile card.</div>
+      </div>
+
+      <!-- CGPA -->
+      <div class="mb-3">
+        <label class="form-label"><i class="fas fa-star me-1"></i> Your CGPA <span class="text-muted" style="text-transform:none;">(Optional)</span></label>
+        <input type="number" name="cgpa" class="form-control" step="0.01" min="0" max="10"
+               placeholder="e.g. 8.75 (out of 10)">
+        <div class="form-text">Your academic CGPA will be displayed on your public candidate profile card.</div>
+      </div>
+
+      <!-- Manifesto -->
+      <div class="mb-3">
+        <label class="form-label"><i class="fas fa-file-alt me-1"></i> Your Manifesto / Campaign Statement <span class="text-danger">*</span></label>
+        <textarea name="manifesto" class="form-control" rows="4"
+                  placeholder="Tell voters what you stand for and what changes you'll bring..."
+                  style="resize:none;" required></textarea>
+      </div>
+
+      <!-- Photo Upload -->
+      <div class="mb-4">
+        <label class="form-label"><i class="fas fa-camera me-1"></i> Profile Photo (Optional)</label>
+        <div class="photo-upload-area" id="dropZone">
+          <input type="file" name="photo" accept="image/*" id="photoInput">
+          <i class="fas fa-cloud-upload-alt fa-2x text-muted d-block mb-2"></i>
+          <p class="text-muted mb-1" style="font-size:0.9rem;">Drag & drop or click to upload your photo</p>
+          <small class="text-muted">PNG, JPG, WEBP — max 5MB. Default avatar used if skipped.</small>
+          <img id="photoPreview" src="#" alt="Preview">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary-custom" id="submitBtn">
+        <i class="fas fa-paper-plane"></i>
+        Submit Candidate Application
+      </button>
+    </form>
+
+    <div class="text-center mt-4">
+      <a href="{{ url_for('candidate_register') }}" class="text-muted text-decoration-none small">
+        <i class="fas fa-arrow-left me-1"></i> Back to Eligibility Check
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// OTP box auto-advance logic
+const boxes = document.querySelectorAll('.otp-box');
+const hiddenOtp = document.getElementById('hiddenOtp');
+const submitBtn = document.getElementById('submitBtn');
+
+function updateOtpValue() {
+  const otp = Array.from(boxes).map(b => b.value).join('');
+  hiddenOtp.value = otp;
+}
+
+document.getElementById('otpForm')?.addEventListener('submit', function(e) {
+  const otp = Array.from(boxes).map(b => b.value).join('');
+  hiddenOtp.value = otp;
+  if (otp.length < 6) {
+    e.preventDefault();
+    alert('Please enter all 6 digits of the OTP.');
+    boxes[0].focus();
+  }
+});
+
+boxes.forEach((box, i) => {
+  box.addEventListener('input', function(e) {
+    const val = this.value.replace(/\D/g, '');
+    this.value = val;
+    if (val && i < boxes.length - 1) {
+      boxes[i + 1].focus();
+    }
+    updateOtpValue();
+  });
+
+  box.addEventListener('keydown', function(e) {
+    if (e.key === 'Backspace' && !this.value && i > 0) {
+      boxes[i - 1].focus();
+      boxes[i - 1].value = '';
+      updateOtpValue();
+    }
+  });
+
+  box.addEventListener('paste', function(e) {
+    const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+    if (paste.length >= 6) {
+      paste.slice(0, 6).split('').forEach((ch, idx) => {
+        if (boxes[idx]) boxes[idx].value = ch;
+      });
+      boxes[5].focus();
+      updateOtpValue();
+    }
+    e.preventDefault();
+  });
+});
+
+// Photo preview
+document.getElementById('photoInput').addEventListener('change', function() {
+  const file = this.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const preview = document.getElementById('photoPreview');
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+});
+</script>
+</body>
+</html>

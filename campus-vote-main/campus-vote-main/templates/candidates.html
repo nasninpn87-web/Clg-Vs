@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Candidates Directory | VoteEase</title>
+<meta name="description" content="Browse all registered candidates standing for student elections across departments. View candidate profiles, CGPA, position slate, manifesto, and live vote standings.">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --primary: #4f46e5;
+  --primary-light: #6366f1;
+  --violet: #8b5cf6;
+  --bg-dark: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+  --card-bg: rgba(255,255,255,0.98);
+}
+* { box-sizing: border-box; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg-dark);
+  min-height: 100vh;
+  color: #1f2937;
+  padding-bottom: 80px;
+}
+.navbar-custom {
+  background: rgba(15,23,42,0.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 14px 0;
+  position: sticky; top: 0; z-index: 1000;
+}
+.nav-brand-text {
+  font-size: 1.25rem; font-weight: 700;
+  color: #fff; text-decoration: none;
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-brand-text span {
+  background: linear-gradient(135deg, #818cf8, #c084fc);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-banner {
+  padding: 60px 20px 80px;
+  text-align: center; color: white;
+  position: relative; overflow: hidden;
+}
+.hero-banner::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 30% 60%, rgba(99,102,241,0.18) 0%, transparent 55%),
+              radial-gradient(circle at 70% 30%, rgba(168,85,247,0.12) 0%, transparent 55%);
+  pointer-events: none;
+}
+.hero-banner h1 {
+  font-size: clamp(2rem,5vw,3.4rem); font-weight: 800;
+  letter-spacing: -1px; position: relative;
+}
+.hero-banner p { color: #cbd5e1; max-width: 640px; margin: 12px auto 32px; font-size: 1rem; position: relative; }
+.hero-stat-row { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-top: 24px; position: relative; }
+.hero-stat {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  border-radius: 16px; padding: 16px 24px; min-width: 130px;
+}
+.hero-stat-num { font-size: 2rem; font-weight: 800; color: #fff; line-height: 1; }
+.hero-stat-label { font-size: 0.75rem; color: #94a3b8; font-weight: 500; margin-top: 4px; }
+.dept-filter-bar {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px; padding: 10px 14px;
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+  margin: 0 auto 36px; max-width: 1100px;
+}
+.dept-tab-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: #cbd5e1; border-radius: 999px; padding: 8px 18px;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer;
+  transition: all 0.22s ease;
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: 'Poppins', sans-serif;
+}
+.dept-tab-btn:hover, .dept-tab-btn.active {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border-color: transparent; color: white;
+  box-shadow: 0 4px 16px rgba(79,70,229,0.4); transform: translateY(-1px);
+}
+.candidate-card {
+  background: var(--card-bg);
+  border-radius: 22px; border: 1px solid rgba(255,255,255,0.7);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.22);
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+  overflow: hidden; display: flex; flex-direction: column;
+  height: 100%; position: relative;
+}
+.candidate-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 28px 60px rgba(79,70,229,0.3);
+}
+.rank-ribbon {
+  position: absolute; top: 14px; right: 14px;
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.85rem; z-index: 5;
+}
+.rank-1 { background: linear-gradient(135deg,#f59e0b,#d97706); color: white; box-shadow: 0 4px 12px rgba(245,158,11,0.5); }
+.rank-2 { background: linear-gradient(135deg,#94a3b8,#64748b); color: white; }
+.rank-3 { background: linear-gradient(135deg,#cd7c34,#b45309); color: white; }
+.rank-other { background: #f1f5f9; color: #64748b; border: 1.5px solid #e2e8f0; }
+.cand-header {
+  background: linear-gradient(135deg, #ede9fe 0%, #dbeafe 100%);
+  padding: 28px 20px 18px; text-align: center; position: relative;
+}
+.cand-avatar {
+  width: 88px; height: 88px; border-radius: 50%;
+  object-fit: cover; border: 4px solid white;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18); margin-bottom: 12px;
+}
+.slate-badge {
+  background: linear-gradient(135deg,#4f46e5,#7c3aed);
+  color: white; font-size: 0.7rem; font-weight: 700;
+  padding: 4px 14px; border-radius: 999px; display: inline-block;
+  margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.slate-president { background: linear-gradient(135deg,#b45309,#f59e0b); }
+.slate-vp { background: linear-gradient(135deg,#1d4ed8,#3b82f6); }
+.slate-secretary { background: linear-gradient(135deg,#059669,#10b981); }
+.slate-cr { background: linear-gradient(135deg,#7c3aed,#a855f7); }
+.dept-pill-card { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; display: inline-flex; align-items: center; gap: 4px; }
+.election-tag-card { background: #f1f5f9; color: #475569; font-size: 0.7rem; font-weight: 600; padding: 3px 9px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; }
+.cand-body { padding: 18px 20px 20px; flex: 1; display: flex; flex-direction: column; }
+.meta-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.meta-chip { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 4px 10px; font-size: 0.75rem; color: #475569; display: flex; align-items: center; gap: 5px; }
+.cgpa-chip { background: linear-gradient(135deg,#fef3c7,#fde68a); border-color: #fcd34d; color: #92400e; font-weight: 700; }
+.nom-status { font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; display: inline-flex; align-items: center; gap: 5px; }
+.nom-approved { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+.nom-self { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+.nom-promoted { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+.manifesto-box { background: #f8fafc; border-radius: 12px; padding: 12px 14px; font-size: 0.8rem; color: #475569; line-height: 1.6; border-left: 3px solid #6366f1; flex: 1; margin-bottom: 14px; }
+.manifesto-title { font-weight: 700; color: #1e293b; font-size: 0.75rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+.vote-bar-wrap { background: #e2e8f0; border-radius: 999px; height: 6px; margin: 6px 0 4px; overflow: hidden; }
+.vote-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg,#4f46e5,#a855f7); transition: width 0.8s ease; }
+.vote-info-row { display: flex; justify-content: space-between; font-size: 0.72rem; color: #64748b; margin-bottom: 14px; }
+.cand-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #f1f5f9; gap: 8px; }
+.btn-vote-cta { background: linear-gradient(135deg,#4f46e5,#7c3aed); color: white; border: none; border-radius: 999px; padding: 7px 18px; font-size: 0.78rem; font-weight: 600; text-decoration: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+.btn-vote-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(79,70,229,0.4); color: white; }
+.cta-band { background: rgba(99,102,241,0.12); border: 2px dashed rgba(255,255,255,0.25); border-radius: 24px; padding: 42px 28px; text-align: center; color: white; margin-bottom: 48px; backdrop-filter: blur(8px); }
+.dept-section-heading { color: white; font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+.dept-section-heading::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.15); }
+.promoted-band { background: linear-gradient(90deg,#f59e0b,#fbbf24); color: #78350f; font-size: 0.68rem; font-weight: 700; padding: 3px 12px; text-align: center; letter-spacing: 0.5px; }
+.empty-state { text-align: center; padding: 80px 20px; color: rgba(255,255,255,0.7); }
+.hidden-dept { display: none !important; }
+</style>
+</head>
+<body>
+
+<nav class="navbar-custom">
+  <div class="container d-flex justify-content-between align-items-center">
+    <a class="nav-brand-text" href="{{ url_for('home') }}">
+      <i class="fas fa-check-to-slot"></i> Vote<span>Ease</span>
+    </a>
+    <div class="d-flex gap-2 flex-wrap">
+      <a href="{{ url_for('home') }}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+        <i class="fas fa-house me-1"></i> Home
+      </a>
+      <a href="{{ url_for('departments') }}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+        <i class="fas fa-building-columns me-1"></i> Departments
+      </a>
+      <a href="{{ url_for('candidate_register') }}" class="btn btn-sm btn-warning rounded-pill px-3 fw-bold">
+        <i class="fas fa-user-plus me-1"></i> Contest Election
+      </a>
+      <a href="{{ url_for('results') }}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+        <i class="fas fa-chart-simple me-1"></i> Results
+      </a>
+      <a href="{{ url_for('login') }}" class="btn btn-sm btn-primary rounded-pill px-3">
+        <i class="fas fa-right-to-bracket me-1"></i> Voter Login
+      </a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero-banner">
+  <div class="container">
+    <span class="badge px-3 py-2 rounded-pill mb-3"
+          style="background:rgba(99,102,241,0.2);border:1px solid rgba(165,180,252,0.4);color:#a5b4fc;font-size:0.78rem;font-weight:600;">
+      <i class="fas fa-users-gear me-1"></i> Official Candidate Directory
+    </span>
+    <h1>Campus Election Candidates</h1>
+    <p>Discover student leaders contesting Class Representative, Department, University Council and Campus Policy positions. Filter by department, view CGPA, manifesto and live vote standings.</p>
+    <div class="hero-stat-row">
+      <div class="hero-stat">
+        <div class="hero-stat-num">{{ candidates|length }}</div>
+        <div class="hero-stat-label">Total Candidates</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">{{ dept_candidates|length }}</div>
+        <div class="hero-stat-label">Departments</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">{{ candidates | sum(attribute='votes') }}</div>
+        <div class="hero-stat-label">Votes Cast</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container" style="max-width:1200px;">
+
+  <div class="cta-band mb-5">
+    <h3 class="fw-bold mb-2"><i class="fas fa-user-tie me-2"></i>Want to Run for Office?</h3>
+    <p class="text-light small mb-3">
+      Register today. Requirements: <strong>Minimum 75% class attendance</strong>, mobile OTP verification, position title.
+    </p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a href="{{ url_for('candidate_register') }}" class="btn btn-warning btn-lg rounded-pill px-4 fw-bold shadow">
+        <i class="fas fa-user-check me-2"></i> Register as Candidate
+      </a>
+      <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg rounded-pill px-4">
+        <i class="fas fa-check-to-slot me-2"></i> Cast Your Vote
+      </a>
+    </div>
+  </div>
+
+  {% if candidates %}
+
+  <div class="dept-filter-bar" id="deptFilterBar">
+    <button class="dept-tab-btn active" onclick="filterDept('all', this)" id="tab-all">
+      <i class="fas fa-globe"></i> All Departments
+      <span class="badge bg-white text-primary ms-1" style="font-size:0.7rem;">{{ candidates|length }}</span>
+    </button>
+    {% for dept_name, dept_cands in dept_candidates.items() %}
+    {% set dept_key = dept_name | replace(' ', '_') | replace('&', 'and') %}
+    <button class="dept-tab-btn" onclick="filterDept('{{ dept_key }}', this)" id="tab-{{ dept_key }}">
+      <i class="fas fa-building-columns"></i> {{ dept_name }}
+      <span class="badge bg-white text-primary ms-1" style="font-size:0.7rem;">{{ dept_cands|length }}</span>
+    </button>
+    {% endfor %}
+  </div>
+
+  {% for dept_name, dept_cands in dept_candidates.items() %}
+  {% set dept_key = dept_name | replace(' ', '_') | replace('&', 'and') %}
+  {% set max_v = namespace(val=1) %}
+  {% for c in dept_cands %}{% if (c.votes or 0) > max_v.val %}{% set max_v.val = c.votes %}{% endif %}{% endfor %}
+
+  <div class="dept-section" data-dept="{{ dept_key }}">
+    <div class="dept-section-heading">
+      <i class="fas fa-building-columns" style="color:#818cf8;"></i>
+      {{ dept_name }}
+      <span class="badge rounded-pill px-3 py-1"
+            style="background:rgba(255,255,255,0.12);color:#cbd5e1;font-size:0.72rem;font-weight:600;">
+        {{ dept_cands|length }} Candidate{{ 's' if dept_cands|length != 1 else '' }}
+      </span>
+    </div>
+
+    <div class="row g-4 mb-5">
+      {% for c in dept_cands %}
+      {% set vote_pct = ((c.votes or 0) / max_v.val * 100) | int if max_v.val > 0 else 0 %}
+      <div class="col-sm-6 col-lg-4 candidate-item" data-dept="{{ dept_key }}">
+        <div class="candidate-card">
+
+          <div class="rank-ribbon {% if c.rank == 1 %}rank-1{% elif c.rank == 2 %}rank-2{% elif c.rank == 3 %}rank-3{% else %}rank-other{% endif %}">
+            {% if c.rank == 1 %}<i class="fas fa-trophy"></i>{% else %}#{{ c.rank }}{% endif %}
+          </div>
+
+          {% if c.promoted_from_stage %}
+          <div class="promoted-band">
+            <i class="fas fa-circle-arrow-up me-1"></i> Promoted Winner  Stage {{ c.promoted_from_stage }}
+          </div>
+          {% endif %}
+
+          <div class="cand-header">
+            <img src="{{ url_for('static', filename='photos/' + (c.photo or 'default.png')) }}"
+                 class="cand-avatar" alt="{{ c.name }}"
+                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='photos/default.png') }}';">
+            <h5 class="fw-bold mb-1 fs-6 text-dark">{{ c.name }}</h5>
+            {% if c.position_title %}
+            {% set pos = c.position_title | lower %}
+            <div class="slate-badge{% if 'president' in pos %} slate-president{% elif 'vice' in pos or ' vp' in pos %} slate-vp{% elif 'secretary' in pos %} slate-secretary{% elif 'cr' in pos or 'representative' in pos %} slate-cr{% endif %}">
+              <i class="fas fa-medal me-1"></i>{{ c.position_title }}
+            </div>
+            {% endif %}
+            <div class="d-flex justify-content-center gap-2 mt-2 flex-wrap">
+              <span class="dept-pill-card"><i class="fas fa-building-columns"></i> {{ c.department or 'General' }}</span>
+              <span class="election-tag-card"><i class="fas fa-layer-group"></i> {{ c.category_name or 'Campus Election' }}</span>
+            </div>
+          </div>
+
+          <div class="cand-body">
+            <div class="meta-row">
+              {% if c.college_id %}<span class="meta-chip"><i class="fas fa-id-badge text-primary"></i> {{ c.college_id }}</span>{% endif %}
+              {% if c.class_section %}<span class="meta-chip"><i class="fas fa-chalkboard-user" style="color:#6366f1;"></i> {{ c.class_section }}</span>{% endif %}
+              {% if c.cgpa %}<span class="meta-chip cgpa-chip"><i class="fas fa-star"></i> CGPA {{ "%.2f"|format(c.cgpa) }}</span>{% endif %}
+              {% if c.stage_info %}<span class="meta-chip" style="background:#eef2ff;border-color:#c7d2fe;color:#4338ca;"><i class="fas fa-stairs"></i> {{ c.stage_info.badge }}</span>{% endif %}
+            </div>
+
+            <div class="mb-2">
+              {% if c.is_self_registered %}<span class="nom-status nom-self"><i class="fas fa-user-tie"></i> Self-Nominated</span>
+              {% elif c.promoted_from_stage %}<span class="nom-status nom-promoted"><i class="fas fa-circle-arrow-up"></i> Promoted Winner</span>
+              {% else %}<span class="nom-status nom-approved"><i class="fas fa-check-circle"></i> Dept-Nominated</span>
+              {% endif %}
+            </div>
+
+            <div class="manifesto-box">
+              <div class="manifesto-title"><i class="fas fa-bullhorn text-primary"></i> Campaign Manifesto</div>
+              {% set manif = c.manifesto or 'Dedicated to advocating for student welfare, campus enhancements, and transparent academic leadership.' %}
+              {{ manif[:160] }}{% if manif|length > 160 %}{% endif %}
+            </div>
+
+            <div class="vote-info-row">
+              <span><i class="fas fa-check-to-slot me-1"></i><strong>{{ c.votes or 0 }}</strong> vote{{ 's' if (c.votes or 0) != 1 else '' }}</span>
+              <span>{% if c.rank == 1 %}<i class="fas fa-trophy text-warning me-1"></i>Leading{% elif c.rank == 2 %}2nd Place{% elif c.rank == 3 %}3rd Place{% else %}#{{ c.rank }} in race{% endif %}</span>
+            </div>
+            <div class="vote-bar-wrap">
+              <div class="vote-bar-fill" style="width:{{ vote_pct }}%;"></div>
+            </div>
+
+            <div class="cand-footer">
+              <small class="text-muted" style="font-size:0.7rem;">
+                <i class="fas fa-landmark me-1"></i>
+                {% set en = c.election_name or 'Campus Election' %}{{ en[:35] }}{% if en|length > 35 %}{% endif %}
+              </small>
+              <a href="{{ url_for('login') }}" class="btn-vote-cta">
+                <i class="fas fa-check-to-slot"></i> Vote
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+
+  {% else %}
+  <div class="empty-state">
+    <div style="font-size:4rem; margin-bottom:16px;">??</div>
+    <h3 class="fw-bold text-white">No Registered Candidates Yet</h3>
+    <p style="color:#94a3b8; max-width:420px; margin:12px auto 28px;">Be the first eligible student to submit a candidate nomination.</p>
+    <a href="{{ url_for('candidate_register') }}" class="btn btn-warning btn-lg rounded-pill px-5 fw-bold">
+      <i class="fas fa-plus me-2"></i> Candidate Registration
+    </a>
+  </div>
+  {% endif %}
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function filterDept(deptKey, clickedBtn) {
+  document.querySelectorAll('.dept-tab-btn').forEach(btn => btn.classList.remove('active'));
+  clickedBtn.classList.add('active');
+  document.querySelectorAll('.dept-section').forEach(section => {
+    if (deptKey === 'all' || section.dataset.dept === deptKey) {
+      section.classList.remove('hidden-dept');
+    } else {
+      section.classList.add('hidden-dept');
+    }
+  });
+  if (deptKey !== 'all') {
+    const first = document.querySelector('.dept-section:not(.hidden-dept)');
+    if (first) setTimeout(() => first.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+  }
+}
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.vote-bar-fill').forEach(bar => {
+    const target = bar.style.width;
+    bar.style.width = '0%';
+    setTimeout(() => { bar.style.width = target; }, 350);
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ dept.name }} | Department Voting Control</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --secondary: #9333ea;
+            --bg-light: #f8fafc;
+        }
+
+        body {
+            background: #f1f5f9;
+            font-family: 'Poppins', sans-serif;
+            color: #1e293b;
+            padding-bottom: 60px;
+        }
+
+        .top-bar {
+            background: #0f172a;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .brand-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-text span {
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dept-pill {
+            background: rgba(99, 102, 241, 0.25);
+            border: 1px solid rgba(129, 140, 248, 0.4);
+            color: #c7d2fe;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-custom {
+            background: #ffffff;
+            border-radius: 18px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 18px;
+            padding: 22px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .stat-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .stat-num {
+            font-size: 1.7rem;
+            font-weight: 700;
+            line-height: 1.1;
+            color: #0f172a;
+        }
+
+        .stat-label {
+            font-size: 0.82rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .nav-tabs-custom {
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 25px;
+            gap: 10px;
+        }
+
+        .nav-tabs-custom .nav-link {
+            border: none;
+            color: #64748b;
+            font-weight: 600;
+            padding: 12px 20px;
+            border-radius: 12px;
+            transition: all 0.2s;
+            background: transparent;
+        }
+
+        .nav-tabs-custom .nav-link:hover {
+            color: var(--primary);
+            background: #eef2ff;
+        }
+
+        .nav-tabs-custom .nav-link.active {
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+        }
+
+        .table-custom th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table-custom td {
+            vertical-align: middle;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .scroll-box {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .badge-stage {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .candidate-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 2px solid #e2e8f0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOP NAV -->
+    <div class="top-bar">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ url_for('home') }}" class="brand-text">
+                <i class="fas fa-check-to-slot"></i> VoteEase <span>Dept Portal</span>
+            </a>
+            <div class="dept-pill">
+                <i class="fas fa-building-columns"></i>
+                {{ dept.name }} ({{ dept.code }})
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold shadow-sm" data-bs-toggle="modal"
+                data-bs-target="#deptModalAddVoter"
+                style="background:linear-gradient(135deg,#4f46e5,#6366f1);border:none;">
+                <i class="fas fa-user-plus me-1"></i> + Add Voter
+            </button>
+            <button class="btn btn-sm btn-success rounded-pill px-3 fw-semibold shadow-sm" data-bs-toggle="modal"
+                data-bs-target="#deptModalAddCandidate"
+                style="background:linear-gradient(135deg,#059669,#10b981);border:none;">
+                <i class="fas fa-user-tie me-1"></i> + Add Candidate
+            </button>
+            <a href="{{ url_for('results') }}" class="btn btn-sm btn-outline-light rounded-pill px-3" target="_blank">
+                <i class="fas fa-chart-column"></i> Results
+            </a>
+            <a href="{{ url_for('departments') }}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                <i class="fas fa-layer-group"></i> All Depts
+            </a>
+            <a href="{{ url_for('department_logout') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                <i class="fas fa-power-off"></i> Exit Portal
+            </a>
+        </div>
+    </div>
+
+    <div class="container-fluid px-4 mt-4" style="max-width: 1300px;">
+
+        <!-- FLASH MESSAGES -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for cat, m in messages %}
+        <div class="alert alert-{{ cat if cat != 'message' else 'info' }} alert-dismissible fade show py-2 mb-4 rounded-4 shadow-sm"
+            role="alert">
+            {{ m | safe }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- QUICK OPERATIONS BAR -->
+        <div
+            class="d-flex justify-content-between align-items-center flex-wrap gap-3 p-3 mb-4 rounded-4 shadow-sm border bg-white">
+            <div class="d-flex align-items-center gap-3">
+                <div
+                    style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">
+                    <i class="fas fa-sliders"></i>
+                </div>
+                <div>
+                    <strong class="d-block text-dark">{{ dept.name }} Voting Administration</strong>
+                    <small class="text-muted">Directly manage voters roll, register candidates, and supervise elections
+                        for {{ dept.code }}.</small>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary rounded-pill px-3 btn-sm fw-semibold" data-bs-toggle="modal"
+                    data-bs-target="#deptModalAddVoter"
+                    style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border:none;">
+                    <i class="fas fa-user-plus me-1"></i> + Register New Voter
+                </button>
+                <button class="btn btn-success rounded-pill px-3 btn-sm fw-semibold" data-bs-toggle="modal"
+                    data-bs-target="#deptModalAddCandidate"
+                    style="background:linear-gradient(135deg,#059669,#10b981);border:none;">
+                    <i class="fas fa-user-tie me-1"></i> + Nominate Candidate
+                </button>
+            </div>
+        </div>
+
+        <!-- DEPARTMENT METRICS -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#e0e7ff; color:#4338ca;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <div class="stat-num">{{ voters|length }} <span style="font-size:1rem;color:#94a3b8;">/ {{
+                                dept.total_students }}</span></div>
+                        <div class="stat-label">Enrolled Voters</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#dcfce7; color:#15803d;">
+                        <i class="fas fa-check-to-slot"></i>
+                    </div>
+                    <div>
+                        <div class="stat-num">{{ dept_votes_cast }}</div>
+                        <div class="stat-label">Ballots Cast by Dept</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#fef3c7; color:#b45309;">
+                        <i class="fas fa-user-clock"></i>
+                    </div>
+                    <div>
+                        <div class="stat-num">{{ pending_candidates|length }}</div>
+                        <div class="stat-label">Pending Nominations</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#f3e8ff; color:#7e22ce;">
+                        <i class="fas fa-percent"></i>
+                    </div>
+                    <div>
+                        <div class="stat-num">{{ dept_turnout }}%</div>
+                        <div class="stat-label">Voter Turnout Rate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABS NAVIGATION -->
+        <ul class="nav nav-tabs nav-tabs-custom" id="deptTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="candidates-tab" data-bs-toggle="tab"
+                    data-bs-target="#candidates-pane" type="button" role="tab">
+                    <i class="fas fa-user-tie me-2"></i>Candidates & Nominations
+                    {% if pending_candidates %}
+                    <span class="badge bg-warning text-dark ms-2">{{ pending_candidates|length }}</span>
+                    {% endif %}
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="voters-tab" data-bs-toggle="tab" data-bs-target="#voters-pane"
+                    type="button" role="tab">
+                    <i class="fas fa-id-card me-2"></i>Voters Directory & Registration
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="process-tab" data-bs-toggle="tab" data-bs-target="#process-pane"
+                    type="button" role="tab">
+                    <i class="fas fa-diagram-project me-2"></i>Department Elections & Process
+                </button>
+            </li>
+        </ul>
+
+        <!-- TAB CONTENTS -->
+        <div class="tab-content" id="deptTabsContent">
+
+            <!-- ==================== TAB 1: CANDIDATES ==================== -->
+            <div class="tab-pane fade show active" id="candidates-pane" role="tabpanel">
+
+                <!-- PENDING CANDIDATE APPROVALS -->
+                <div class="card-custom" style="border-left: 4px solid #f59e0b;">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div
+                                style="width:42px;height:42px;border-radius:12px;background:#fef3c7;color:#b45309;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-0">Pending Candidate Nominations</h5>
+                                <small class="text-muted">Review and verify applications submitted by {{ dept.name }}
+                                    students</small>
+                            </div>
+                        </div>
+                        <span class="badge bg-warning-subtle text-warning border border-warning px-3 py-1 rounded-pill">
+                            {{ pending_candidates|length }} Waiting
+                        </span>
+                    </div>
+
+                    {% if pending_candidates %}
+                    <div class="table-responsive">
+                        <table class="table table-custom align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Candidate College ID</th>
+                                    <th>Target Election Tier</th>
+                                    <th>Position Applied</th>
+                                    <th>Manifesto</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pc in pending_candidates %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-primary">{{ pc.college_id }}</div>
+                                        <small class="text-muted">{{ dept.name }}</small>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="badge bg-primary-subtle text-primary border border-primary px-2 py-1 rounded-pill">
+                                            {{ pc.category_name }}
+                                        </span>
+                                        <div class="small fw-semibold mt-1">{{ pc.election_name }}</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary px-2 py-1 rounded-pill">
+                                            {{ pc.position_title or "Representative" }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ (pc.manifesto or 'N/A')[:90] }}</small>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="d-inline-flex gap-2">
+                                            <form method="POST"
+                                                action="{{ url_for('dept_approve_candidate', cid=pc.id) }}">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <button class="btn btn-sm btn-success rounded-pill px-3">
+                                                    <i class="fas fa-check"></i> Approve
+                                                </button>
+                                            </form>
+                                            <form method="POST"
+                                                action="{{ url_for('dept_reject_candidate', cid=pc.id) }}"
+                                                onsubmit="return confirm('Reject this nomination?');">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <button class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                                    <i class="fas fa-times"></i> Reject
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-check-double fa-2x mb-2 text-success opacity-50"></i>
+                        <div>No pending candidate nominations for {{ dept.name }}. All up to date!</div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="row g-4">
+                    <!-- APPROVED DEPARTMENT CANDIDATES -->
+                    <div class="col-lg-8">
+                        <div class="card-custom h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="fw-bold mb-0">
+                                    <i class="fas fa-user-check text-success me-2"></i>Approved Department Candidates
+                                </h5>
+                                <span class="badge bg-light text-dark border px-3 py-1 rounded-pill">
+                                    {{ approved_candidates|length }} Contesting
+                                </span>
+                            </div>
+
+                            {% if approved_candidates %}
+                            <div class="table-responsive scroll-box">
+                                <table class="table table-custom align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Candidate</th>
+                                            <th>Election Stage</th>
+                                            <th>Position</th>
+                                            <th>CGPA</th>
+                                            <th>Votes</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for c in approved_candidates %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <img src="{{ url_for('static', filename='photos/' + (c.photo or 'default.png')) }}"
+                                                        class="candidate-avatar" alt="Photo"
+                                                        onerror="this.src='/static/photos/default.png'">
+                                                    <div>
+                                                        <div class="fw-bold">{{ c.name }}</div>
+                                                        <small class="text-muted">{{ c.college_id or dept.code
+                                                            }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span
+                                                    class="badge bg-indigo-subtle text-primary border border-primary badge-stage">
+                                                    {{ c.category_name }}
+                                                </span>
+                                                <div class="small text-truncate" style="max-width:180px;">{{
+                                                    c.election_name }}</div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark border badge-stage">
+                                                    {{ c.position_title or "General" }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if c.cgpa %}
+                                                <span class="badge rounded-pill px-2 py-1" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;font-weight:700;">
+                                                    <i class="fas fa-star me-1"></i>{{ "%.2f"|format(c.cgpa) }}
+                                                </span>
+                                                {% else %}
+                                                <small class="text-muted">—</small>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <strong class="text-success">{{ c.votes }}</strong>
+                                            </td>
+                                            <td class="text-end">
+                                                <div class="d-inline-flex gap-1">
+                                                    <!-- Promote Winner Button -->
+                                                    <button
+                                                        class="btn btn-sm btn-outline-primary rounded-pill px-2 py-1"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deptPromoteModal{{ c.id }}"
+                                                        title="Promote Winner to next tier">
+                                                        <i class="fas fa-trophy"></i> Promote
+                                                    </button>
+
+                                                    <form method="POST"
+                                                        action="{{ url_for('dept_delete_candidate', cid=c.id) }}"
+                                                        onsubmit="return confirm('Remove candidate {{ c.name }}?');">
+                                                        <input type="hidden" name="csrf_token"
+                                                            value="{{ csrf_token() }}">
+                                                        <button
+                                                            class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+
+                                                <!-- Promote Modal -->
+                                                <div class="modal fade text-start" id="deptPromoteModal{{ c.id }}"
+                                                    tabindex="-1">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <form method="POST"
+                                                                action="{{ url_for('dept_promote_candidate') }}">
+                                                                <input type="hidden" name="csrf_token"
+                                                                    value="{{ csrf_token() }}">
+                                                                <input type="hidden" name="candidate_id"
+                                                                    value="{{ c.id }}">
+
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title fw-bold">🚀 Advance Candidate
+                                                                        to Next Tier</h5>
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <p>Advance <strong>{{ c.name }}</strong> ({{
+                                                                        dept.name }}) into the next election stage:</p>
+                                                                    <div class="mb-3">
+                                                                        <label
+                                                                            class="form-label small fw-semibold">Destination
+                                                                            Election Stage</label>
+                                                                        <select name="target_election_id"
+                                                                            class="form-select" required>
+                                                                            {% for dest in elections %}
+                                                                            {% if dest.id != c.election_id %}
+                                                                            <option value="{{ dest.id }}">
+                                                                                {{ dest.stage_info.badge }}: {{
+                                                                                dest.name }} ({{ dest.category_name }})
+                                                                            </option>
+                                                                            {% endif %}
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button"
+                                                                        class="btn btn-secondary rounded-pill"
+                                                                        data-bs-dismiss="modal">Cancel</button>
+                                                                    <button type="submit"
+                                                                        class="btn btn-success rounded-pill px-3">Confirm
+                                                                        Promotion →</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-user-plus fa-2x mb-2 opacity-50"></i>
+                                <div>No approved candidates registered under {{ dept.name }} yet.</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- NOMINATE CANDIDATE DIRECTLY -->
+                    <div class="col-lg-4">
+                        <div class="card-custom h-100">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-plus-circle text-primary me-2"></i>Nominate Department Candidate
+                            </h5>
+                            <p class="text-muted small">Directly register a student candidate from {{ dept.name }} into
+                                an election tier.</p>
+
+                            <form method="POST" action="{{ url_for('dept_add_candidate') }}"
+                                enctype="multipart/form-data">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                <div class="mb-2">
+                                    <label class="form-label small fw-semibold">Target Election Stage</label>
+                                    <select name="election_id" class="form-select" required>
+                                        {% for e in elections %}
+                                        <option value="{{ e.id }}">{{ e.stage_info.badge }}: {{ e.name }}{% if e.restricted_to and e.restricted_to != dept.name %} [Only {{ e.restricted_to }}]{% endif %}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label class="form-label small fw-semibold">Candidate Name <span class="text-danger">*</span></label>
+                                    <input name="candidate_name" class="form-control" placeholder="e.g. Alex Johnson"
+                                        required>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label class="form-label small fw-semibold">Candidate College ID <span class="text-danger">*</span></label>
+                                    <input name="college_id" id="dashCandCidSidebar" class="form-control" placeholder="e.g. 0905CS241012"
+                                        style="text-transform:uppercase;" required
+                                        oninput="validateDashInput(this, 'dashCandErrSidebar', 'dashCandBtnSidebar')">
+                                    <div id="dashCandErrSidebar" class="alert alert-danger py-2 px-3 small rounded-3 mt-2 d-none">
+                                        <i class="fas fa-circle-exclamation me-1"></i> <span id="dashCandErrMsgSidebar"></span>
+                                    </div>
+                                    <small class="text-muted" style="font-size:0.75rem;">Must be an enrolled voter of {{ dept.name }}</small>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label class="form-label small fw-semibold">Position Title</label>
+                                    <input name="position_title" class="form-control"
+                                        placeholder="e.g. Class Representative (CR)">
+                                </div>
+
+                                <div class="mb-2">
+                                    <label class="form-label small fw-semibold">Candidate CGPA <span class="text-muted">(Optional)</span></label>
+                                    <input name="cgpa" type="number" step="0.01" min="0" max="10" class="form-control"
+                                        placeholder="e.g. 8.75">
+                                    <small class="text-muted" style="font-size:0.72rem;">Academic CGPA (0–10 scale). Shown on candidate public profile.</small>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label class="form-label small fw-semibold">Manifesto / Vision</label>
+                                    <textarea name="manifesto" class="form-control" rows="2"
+                                        placeholder="Brief campaign pledge..."></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Profile Photo (Optional)</label>
+                                    <input name="photo" type="file" class="form-control" accept="image/*">
+                                </div>
+
+                                <button type="submit" id="dashCandBtnSidebar" class="btn btn-primary w-100 rounded-pill">
+                                    <i class="fas fa-user-plus"></i> Add Candidate to Round
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ==================== TAB 2: VOTERS ==================== -->
+            <div class="tab-pane fade" id="voters-pane" role="tabpanel">
+
+                <div class="row g-4">
+                    <!-- VOTER REGISTRATION FORM -->
+                    <div class="col-lg-4">
+                        <div class="card-custom">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-user-plus text-primary me-2"></i>Register New Voter
+                            </h5>
+                            <p class="text-muted small">Add a verified student voter directly to the {{ dept.name }}
+                                voting roll.</p>
+
+                            <form method="POST" action="{{ url_for('dept_add_voter') }}" enctype="multipart/form-data">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                <div class="mb-2">
+                                    <label class="form-label small fw-semibold text-primary">
+                                        <i class="fas fa-id-badge"></i> Role
+                                    </label>
+                                    <div class="p-2 bg-light rounded border d-flex align-items-center justify-content-between">
+                                        <span class="badge bg-primary rounded-pill px-2 py-1 small">Student Elector</span>
+                                        <small class="text-muted" style="font-size:0.75rem;">Verified Voting Rights</small>
+                                    </div>
+                                    <input type="hidden" name="role" value="Student Elector">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">College ID / Voter ID <span class="text-danger">*</span></label>
+                                    <input type="text" name="college_id" id="dashVoterCidSidebar" class="form-control"
+                                        placeholder="e.g. 0905CS241099" required style="text-transform:uppercase;"
+                                        oninput="validateDashInput(this, 'dashVoterErrSidebar', 'dashVoterBtnSidebar')">
+                                    <div id="dashVoterErrSidebar" class="alert alert-danger py-2 px-3 small rounded-3 mt-2 d-none">
+                                        <i class="fas fa-circle-exclamation me-1"></i> <span id="dashVoterErrMsgSidebar"></span>
+                                    </div>
+                                    <small class="text-muted" style="font-size:0.75rem;">Must correspond to {{ dept.name }} ({{ dept.code }}).</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Class / Section <span class="text-danger">*</span></label>
+                                    <input type="text" name="class_section" class="form-control"
+                                        placeholder="e.g. CSE-A, 3rd Year Sec B" required style="text-transform:uppercase;">
+                                </div>
+
+                                <div class="row g-2 mb-3">
+                                    <div class="col-sm-6">
+                                        <label class="form-label small fw-semibold">Mobile No</label>
+                                        <input type="tel" name="mobile" class="form-control form-control-sm" placeholder="e.g. 9876543210">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="form-label small fw-semibold">Email ID</label>
+                                        <input type="email" name="email" class="form-control form-control-sm" placeholder="voter@campus.edu">
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Voter Photo (Optional)</label>
+                                    <input type="file" name="photo" class="form-control form-control-sm" accept="image/*">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Temporary / Initial Password <span class="text-danger">*</span></label>
+                                    <input type="password" name="password" class="form-control"
+                                        placeholder="Minimum 6 characters" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Current Attendance (%)</label>
+                                    <input type="number" name="attendance_pct" class="form-control" min="0" max="100"
+                                        step="0.1" value="85.0" required>
+                                    <small class="text-muted">Attendance ≥ 75% required if voter runs as
+                                        candidate</small>
+                                </div>
+
+                                <button type="submit" id="dashVoterBtnSidebar" class="btn btn-success w-100 rounded-pill">
+                                    <i class="fas fa-check"></i> Register Voter
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- VOTER DIRECTORY TABLE -->
+                    <div class="col-lg-8">
+                        <div class="card-custom">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                                <div>
+                                    <h5 class="fw-bold mb-0">
+                                        <i class="fas fa-id-card-clip text-primary me-2"></i>{{ dept.name }} Voter Roll
+                                    </h5>
+                                    <small class="text-muted">Total Enrolled: {{ voters|length }} Voters (Capacity: {{
+                                        dept.total_students }})</small>
+                                </div>
+                                <div style="min-width: 240px;">
+                                    <input type="text" id="deptVoterSearch"
+                                        class="form-control form-control-sm rounded-pill"
+                                        placeholder="🔍 Search Voter College ID...">
+                                </div>
+                            </div>
+
+                            <div class="scroll-box">
+                                <table class="table table-custom table-hover align-middle mb-0" id="deptVoterTable">
+                                    <thead class="sticky-top">
+                                        <tr>
+                                            <th>Elector</th>
+                                            <th>Class / Sec</th>
+                                            <th>Role</th>
+                                            <th>Contact</th>
+                                            <th>Attendance</th>
+                                            <th>Candidacy</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for v in voters %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <img src="{{ url_for('static', filename='photos/' + (v.photo or 'default.png')) }}"
+                                                         onerror="this.src='{{ url_for('static', filename='photos/default.png') }}';"
+                                                         class="rounded-circle border" style="width:34px;height:34px;object-fit:cover;" alt="Avatar">
+                                                    <div>
+                                                        <span class="fw-bold text-primary voter-id-cell d-block">{{ v.college_id }}</span>
+                                                        <small class="text-muted">{{ v.created_at[:10] if v.created_at else 'Active' }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark border">{{ v.class_section or 'General' }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary-subtle text-primary border border-primary rounded-pill px-2 py-1 small">
+                                                    <i class="fas fa-user-check me-1"></i>{{ v.role or 'Student Elector' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="small text-muted">
+                                                    <div><i class="fas fa-mobile-screen me-1"></i>{{ v.mobile or 'N/A' }}</div>
+                                                    <div><i class="fas fa-envelope me-1"></i>{{ v.email or 'N/A' }}</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% set att = v.attendance_pct or 0 %}
+                                                <span
+                                                    class="badge {% if att >= 75 %}bg-success-subtle text-success border border-success{% else %}bg-danger-subtle text-danger border border-danger{% endif %} rounded-pill px-2 py-1">
+                                                    {{ att }}%
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if att >= 75 %}
+                                                <small class="text-success"><i class="fas fa-check-circle"></i> Eligible</small>
+                                                {% else %}
+                                                <small class="text-muted"><i
+                                                        class="fas fa-times-circle text-danger"></i> &lt; 75%</small>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-end">
+                                                <form method="POST"
+                                                    action="{{ url_for('dept_delete_voter', college_id=v.college_id) }}"
+                                                    onsubmit="return confirm('Remove voter {{ v.college_id }} from {{ dept.name }}?');">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                    <button
+                                                        class="btn btn-sm btn-link text-danger text-decoration-none">
+                                                        <i class="fas fa-trash-can"></i> Remove
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted py-4">No voters enrolled under
+                                                {{ dept.name }} yet.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ==================== TAB 3: PROCESS & ELECTIONS ==================== -->
+            <div class="tab-pane fade" id="process-pane" role="tabpanel">
+
+                <div class="row g-4">
+                    <!-- CREATE ELECTION STAGE FOR DEPARTMENT -->
+                    <div class="col-lg-5">
+                        <div class="card-custom">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-plus-circle text-primary me-2"></i>Launch Department Election Tier
+                            </h5>
+                            <p class="text-muted small">Initiate a Class Level (CR) or Department Election round for {{
+                                dept.name }}.</p>
+
+                            <form method="POST" action="{{ url_for('dept_create_election') }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Governance Stage</label>
+                                    <select name="stage" class="form-select" required>
+                                        <option value="1">Step 1: Class Election (CR) - Class Level</option>
+                                        <option value="2">Step 2: Department Election - Academic Faculty</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Election Title</label>
+                                    <input name="election_name" class="form-control"
+                                        placeholder="e.g. {{ dept.code }} CR Election 2026" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Description</label>
+                                    <textarea name="description" class="form-control" rows="2"
+                                        placeholder="Elect class/department representatives for {{ dept.name }}."></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Duration (minutes)</label>
+                                    <input name="duration" type="number" min="1" value="2880" class="form-control"
+                                        required>
+                                    <small class="text-muted">2880 mins = 48 hours</small>
+                                </div>
+
+                                <button type="submit" class="btn btn-purple w-100 rounded-pill text-white"
+                                    style="background: linear-gradient(135deg, var(--primary), var(--secondary));">
+                                    <i class="fas fa-rocket"></i> Launch Election Round
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- ACTIVE ELECTIONS ROSTER -->
+                    <div class="col-lg-7">
+                        <div class="card-custom">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-landmark text-primary me-2"></i>Election Roster & Participation
+                            </h5>
+                            <p class="text-muted small">Status of campus election tiers and participation of {{
+                                dept.name }} voters.</p>
+
+                            {% for e in elections %}
+                            <div class="border rounded-3 p-3 mb-3 bg-light">
+                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                                    <div>
+                                        <span class="badge bg-primary rounded-pill me-2">{{ e.stage_info.badge }}</span>
+                                        <strong class="fs-6">{{ e.name }}</strong>
+                                        <div class="small text-muted">{{ e.category_name }}</div>
+                                    </div>
+                                    <div>
+                                        {% if e.is_active %}
+                                        <span class="badge bg-success rounded-pill px-3 py-1"><i
+                                                class="fas fa-circle-play me-1"></i> Voting Active</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary rounded-pill px-3 py-1">Concluded</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="small text-muted mb-2">{{ e.description or "No description provided." }}
+                                </div>
+                                <div
+                                    class="d-flex justify-content-between align-items-center text-muted small pt-2 border-top">
+                                    <span><i class="fas fa-clock me-1"></i> Ends: {{ e.end_time[:16].replace('T', ' ')
+                                        if e.end_time else 'Active' }}</span>
+                                    <a href="{{ url_for('results', election_id=e.id) }}"
+                                        class="text-primary text-decoration-none fw-semibold" target="_blank">
+                                        View Live Tally <i class="fas fa-arrow-up-right-from-square"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ==================== MODAL: ADD VOTER TO DEPARTMENT ==================== -->
+    <div class="modal fade" id="deptModalAddVoter" tabindex="-1" aria-labelledby="deptModalAddVoterLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header text-white rounded-top-4"
+                    style="background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;">
+                    <h5 class="modal-title fw-bold" id="deptModalAddVoterLabel">
+                        <i class="fas fa-user-plus me-2"></i>Register Voter for {{ dept.name }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <form method="POST" action="{{ url_for('dept_add_voter') }}" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Department</label>
+                            <input type="text" class="form-control" value="{{ dept.name }} ({{ dept.code }})" readonly
+                                disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-primary">Role / Status</label>
+                            <div class="p-2 bg-light rounded border d-flex align-items-center justify-content-between">
+                                <span class="badge bg-primary rounded-pill px-3 py-1">Student Elector</span>
+                                <small class="text-muted">Assigned voting privileges</small>
+                            </div>
+                            <input type="hidden" name="role" value="Student Elector">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">College ID / Voter ID <span
+                                    class="text-danger">*</span></label>
+                            <input type="text" name="college_id" id="dashVoterCidModal" class="form-control" placeholder="e.g. 0905CS241099"
+                                required style="text-transform:uppercase;"
+                                oninput="validateDashInput(this, 'dashVoterErrModal', 'dashVoterBtnModal')">
+                            <div id="dashVoterErrModal" class="alert alert-danger py-2 px-3 small rounded-3 mt-2 d-none">
+                                <i class="fas fa-circle-exclamation me-1"></i> <span id="dashVoterErrMsgModal"></span>
+                            </div>
+                            <small class="text-muted">Unique student roll number. Must correspond to {{ dept.name }} ({{ dept.code }}).</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Class / Section <span class="text-danger">*</span></label>
+                            <input type="text" name="class_section" class="form-control" placeholder="e.g. CSE-A, 3rd Year Sec B"
+                                required style="text-transform:uppercase;">
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold text-dark">Mobile No</label>
+                                <input type="tel" name="mobile" class="form-control" placeholder="e.g. 9876543210">
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold text-dark">Email ID</label>
+                                <input type="email" name="email" class="form-control" placeholder="voter@campus.edu">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Voter Photo (Optional)</label>
+                            <input type="file" name="photo" class="form-control" accept="image/*">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Password <span
+                                    class="text-danger">*</span></label>
+                            <input type="password" name="password" class="form-control"
+                                placeholder="Initial access password" required>
+                            <small class="text-muted">Minimum 6 characters recommended.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Attendance Percentage (%)</label>
+                            <input type="number" name="attendance_pct" class="form-control" min="0" max="100" step="0.1"
+                                value="85.0" required>
+                            <small class="text-muted">Students with >= 75% are eligible to vote.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 p-4 pt-0">
+                        <button type="button" class="btn btn-light rounded-pill px-4"
+                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" id="dashVoterBtnModal" class="btn btn-primary rounded-pill px-4 fw-semibold"
+                            style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border:none;">
+                            <i class="fas fa-check me-1"></i> Register Voter
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: ADD CANDIDATE TO DEPARTMENT ==================== -->
+    <div class="modal fade" id="deptModalAddCandidate" tabindex="-1" aria-labelledby="deptModalAddCandidateLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header text-white rounded-top-4"
+                    style="background: linear-gradient(135deg, #059669, #10b981) !important;">
+                    <h5 class="modal-title fw-bold" id="deptModalAddCandidateLabel">
+                        <i class="fas fa-user-tie me-2"></i>Nominate Candidate for {{ dept.name }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <form method="POST" action="{{ url_for('dept_add_candidate') }}" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Target Election Stage <span
+                                    class="text-danger">*</span></label>
+                            <select name="election_id" class="form-select" required>
+                                {% for e in elections %}
+                                <option value="{{ e.id }}">{{ e.stage_info.badge }}: {{ e.name }}{% if e.restricted_to and e.restricted_to != dept.name %} [Only {{ e.restricted_to }}]{% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-sm-7">
+                                <label class="form-label fw-semibold text-dark">Candidate Name <span
+                                        class="text-danger">*</span></label>
+                                <input name="candidate_name" class="form-control" placeholder="e.g. Alex Johnson"
+                                    required>
+                            </div>
+                            <div class="col-sm-5">
+                                <label class="form-label fw-semibold text-dark">College ID <span class="text-danger">*</span></label>
+                                <input name="college_id" id="dashCandCidModal" class="form-control" placeholder="e.g. 0905CS241012"
+                                    style="text-transform:uppercase;" required
+                                    oninput="validateDashInput(this, 'dashCandErrModal', 'dashCandBtnModal')">
+                                <small class="text-muted" style="font-size:0.75rem;">Must belong to {{ dept.name }}</small>
+                            </div>
+                        </div>
+
+                        <div id="dashCandErrModal" class="alert alert-danger py-2 px-3 mb-3 small rounded-3 d-none">
+                            <i class="fas fa-circle-exclamation me-1"></i> <span id="dashCandErrMsgModal"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Position Title</label>
+                            <input name="position_title" class="form-control"
+                                placeholder="e.g. Class Representative (CR)">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Manifesto / Vision</label>
+                            <textarea name="manifesto" class="form-control" rows="2"
+                                placeholder="Brief campaign pledge..."></textarea>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold text-dark">Profile Photo (Optional)</label>
+                            <input name="photo" type="file" class="form-control" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 p-4 pt-0">
+                        <button type="button" class="btn btn-light rounded-pill px-4"
+                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" id="dashCandBtnModal" class="btn btn-success rounded-pill px-4 fw-semibold"
+                            style="background:linear-gradient(135deg,#059669,#10b981);border:none;">
+                            <i class="fas fa-check me-1"></i> Nominate Candidate
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const CURRENT_DEPT_NAME = {{ dept.name | tojson }};
+        const CURRENT_DEPT_CODE = {{ dept.code | tojson }};
+        const DEPT_MAP = {
+            'Computer Science': ['CS', 'CSE', 'COMP'],
+            'Electronics & Communication': ['EC', 'ECE', 'ETC'],
+            'Mechanical Engineering': ['ME', 'MECH'],
+            'Civil Engineering': ['CE', 'CIVIL'],
+            'Information Technology': ['IT', 'INFO'],
+            'Electrical Engineering': ['EE', 'EEE', 'ELEC'],
+            'Artificial Intelligence': ['AI', 'AIML', 'AIDS']
+        };
+
+        function getDeptForCid(cid) {
+            if (!cid) return null;
+            cid = cid.toUpperCase();
+            for (const [dept, aliases] of Object.entries(DEPT_MAP)) {
+                for (const a of aliases) {
+                    if (cid.includes(a)) return dept;
+                }
+            }
+            return null;
+        }
+
+        function validateDashInput(inputEl, errBoxId, btnId) {
+            if (!inputEl) return;
+            const val = inputEl.value.trim().toUpperCase();
+            const errBox = document.getElementById(errBoxId);
+            const errMsg = document.getElementById(errBoxId.replace('Err', 'ErrMsg'));
+            const btn = document.getElementById(btnId);
+
+            if (!val) {
+                if (errBox) errBox.classList.add('d-none');
+                if (btn) btn.disabled = false;
+                return;
+            }
+
+            const detected = getDeptForCid(val);
+            const aliases = DEPT_MAP[CURRENT_DEPT_NAME] || [CURRENT_DEPT_CODE];
+            const matches = aliases.some(a => val.includes(a.toUpperCase()));
+
+            if (!matches) {
+                if (errBox) {
+                    errBox.classList.remove('d-none');
+                    if (errMsg) {
+                        if (detected) {
+                            errMsg.textContent = `❌ Error: College ID '${val}' corresponds to ${detected}, not ${CURRENT_DEPT_NAME}. Voters and candidates can only be added by their corresponding department.`;
+                        } else {
+                            errMsg.textContent = `❌ Error: College ID '${val}' does not match ${CURRENT_DEPT_NAME}. ID must contain department code (${aliases.join(', ')}).`;
+                        }
+                    }
+                }
+                if (btn) btn.disabled = true;
+            } else {
+                if (errBox) errBox.classList.add('d-none');
+                if (btn) btn.disabled = false;
+            }
+        }
+
+        // Live voter search filter
+        document.getElementById('deptVoterSearch')?.addEventListener('input', function (e) {
+            const val = e.target.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#deptVoterTable tbody tr');
+            rows.forEach(r => {
+                const idCell = r.querySelector('.voter-id-cell');
+                if (idCell) {
+                    const text = idCell.textContent.toLowerCase();
+                    r.style.display = text.includes(val) ? '' : 'none';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

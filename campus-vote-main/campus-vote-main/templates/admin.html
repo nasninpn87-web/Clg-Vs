@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Portal — Department Management | VoteEase</title>
+
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root {
+    --purple: #4f46e5;
+    --purple-light: #6366f1;
+    --violet: #a855f7;
+    --heading: #1f2937;
+    --text: #4b5563;
+}
+
+body {
+    background: linear-gradient(135deg, #ede9fe 0%, #e0d4fc 100%);
+    font-family: 'Poppins', sans-serif;
+    color: var(--heading);
+    min-height: 100vh;
+}
+
+.card {
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.96);
+}
+
+.stat {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.btn-purple {
+    background: linear-gradient(to right, #6366f1, #a855f7);
+    color: white;
+    border: none;
+    font-weight: 600;
+    border-radius: 30px;
+    padding: 9px 20px;
+    transition: all 0.2s;
+}
+
+.btn-purple:hover {
+    color: white;
+    opacity: 0.95;
+    transform: translateY(-1px);
+}
+
+.dept-badge {
+    background: #e0e7ff;
+    color: #3730a3;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    border-radius: 8px;
+}
+
+.dept-mini-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 18px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dept-mini-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(99,102,241,0.12);
+}
+</style>
+</head>
+
+<body>
+<div class="container py-4" style="max-width: 1200px;">
+
+{% if not logged_in %}
+<!-- ADMIN LOGIN VIEW -->
+<div class="row justify-content-center align-items-center" style="min-height: 85vh;">
+  <div class="col-md-5">
+    <div class="card p-4 p-md-5 shadow-lg">
+      <div class="text-center mb-4">
+        <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-2">
+            <i class="fas fa-shield-halved fa-2x"></i>
+        </div>
+        <h3 class="fw-bold mb-1">Central Admin Portal</h3>
+        <p class="text-muted small">Institutional Department Management Console</p>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+          <div class="alert alert-{{ cat }} py-2 small">{{ msg }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-muted">Admin Master Password</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light"><i class="fas fa-lock text-muted"></i></span>
+            <input type="password" name="password" class="form-control" placeholder="Enter Admin Password (default: admin123)" required>
+          </div>
+        </div>
+        <button name="admin_login" class="btn btn-purple w-100 py-2 mb-3">
+            <i class="fas fa-right-to-bracket me-1"></i> Sign In as Central Admin
+        </button>
+      </form>
+
+      <div class="text-center">
+        <a href="{{ url_for('home') }}" class="small text-decoration-none text-muted">
+            <i class="fas fa-arrow-left"></i> Return to Public Home
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% else %}
+
+<!-- DASHBOARD NAVBAR -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+  <div>
+    <h2 class="fw-bold mb-0"><i class="fas fa-shield-halved text-primary me-2"></i>Department Management Console</h2>
+    <small class="text-muted">Central institutional governance — Department creation, quotas, and coordinator keys</small>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="{{ url_for('home') }}" class="btn btn-outline-primary rounded-pill px-3">
+      <i class="fas fa-house"></i> Home
+    </a>
+    <a href="{{ url_for('department_login') }}" class="btn btn-warning rounded-pill px-3 fw-semibold" target="_blank">
+      <i class="fas fa-building-columns me-1"></i> Open Dept Portal
+    </a>
+    <a href="{{ url_for('departments') }}" class="btn btn-outline-info rounded-pill px-3">
+      <i class="fas fa-layer-group"></i> Public Depts View
+    </a>
+    <a href="{{ url_for('results') }}" class="btn btn-outline-secondary rounded-pill px-3">
+      <i class="fas fa-chart-column"></i> Results
+    </a>
+    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger rounded-pill px-3">
+      <i class="fas fa-power-off"></i> Logout
+    </a>
+  </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}
+    <div class="alert alert-{{ cat }} alert-dismissible fade show py-2" role="alert">
+      {{ msg }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endfor %}
+{% endwith %}
+
+<!-- ARCHITECTURAL ROLE EXPLAINER -->
+<div class="card p-3 mb-4" style="background: linear-gradient(135deg, #eef2ff, #fdf4ff); border-left: 5px solid #4f46e5;">
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div class="d-flex align-items-center gap-3">
+      <div style="width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;display:flex;align-items:center;justify-content:center;font-size:1.3rem;">
+        <i class="fas fa-sitemap"></i>
+      </div>
+      <div>
+        <h6 class="fw-bold mb-1 text-primary">Decentralized Governance Active</h6>
+        <p class="small text-muted mb-0">
+          <strong>Central Admin</strong> handles overall department creation, seats, and coordinator credentials.
+          <strong>Corresponding Departments</strong> independently govern their own candidate approvals, voter enrollment, and election processes via the <strong>Department Portal</strong>.
+        </p>
+      </div>
+    </div>
+    <a href="{{ url_for('department_login') }}" class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold" style="background:#4f46e5;border:none;" target="_blank">
+      <i class="fas fa-door-open me-1"></i> Department Portals →
+    </a>
+  </div>
+</div>
+
+<!-- EXECUTIVE OVERVIEW METRICS -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card p-3 text-center">
+      <div class="text-muted small">Academic Departments</div>
+      <div class="stat text-primary">{{ departments|length }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card p-3 text-center">
+      <div class="text-muted small">Total Registered Voters</div>
+      <div class="stat text-success">{{ total_students }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card p-3 text-center">
+      <div class="text-muted small">Campus Ballots Cast</div>
+      <div class="stat" style="color: #8b5cf6;">{{ total_votes_cast }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card p-3 text-center">
+      <div class="text-muted small">Overall Campus Turnout</div>
+      <div class="stat text-info">{{ turnout_pct }}%</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN SECTION: DEPARTMENT MANAGEMENT -->
+<div class="card p-4 mb-4">
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#a855f7);color:white;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">
+        <i class="fas fa-building-columns"></i>
+      </div>
+      <div>
+        <h5 class="fw-bold mb-0">Overall Department Management</h5>
+        <small class="text-muted">Register academic departments, allocate voter capacities, and assign coordinator access passwords</small>
+      </div>
+    </div>
+    <span class="badge bg-primary-subtle text-primary border border-primary px-3 py-2 rounded-pill">
+      {{ departments|length }} Departments Active
+    </span>
+  </div>
+
+  <!-- Add Department Form -->
+  <form method="POST" action="{{ url_for('admin_departments') }}" class="row g-2 align-items-end mb-4 bg-light p-3 rounded-4 border">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="dept_action" value="add">
+
+    <div class="col-md-3">
+      <label class="form-label small fw-semibold">Department Name</label>
+      <input name="dept_name" class="form-control form-control-sm" placeholder="e.g. Artificial Intelligence" required>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label small fw-semibold">Code</label>
+      <input name="dept_code" class="form-control form-control-sm" placeholder="e.g. AI" required style="text-transform:uppercase">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label small fw-semibold">Voter Seats Quota</label>
+      <input name="total_students" type="number" min="1" value="60" class="form-control form-control-sm">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label small fw-semibold">Coordinator Login Password</label>
+      <input name="coordinator_password" type="text" value="dept123" class="form-control form-control-sm" placeholder="Default: dept123">
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-purple btn-sm w-100 rounded-pill">
+        <i class="fas fa-plus"></i> Add Department
+      </button>
+    </div>
+  </form>
+
+  <!-- Department Table -->
+  <div class="table-responsive">
+    <table class="table align-middle table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Department</th>
+          <th>Code</th>
+          <th>Voter Capacity</th>
+          <th>Enrolled Voters</th>
+          <th>Fill Rate</th>
+          <th>Coordinator Key</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in departments %}
+        <tr>
+          <td>
+            <strong>{{ d.name }}</strong>
+          </td>
+          <td>
+            <span class="dept-badge">{{ d.code }}</span>
+          </td>
+          <td>{{ d.total_students }} seats</td>
+          <td>
+            <span class="fw-semibold text-primary">{{ d.enrolled_students }} voters</span>
+          </td>
+          <td>
+            {% set pct = ((d.enrolled_students / d.total_students * 100) | round(1)) if d.total_students > 0 else 0 %}
+            <div class="d-flex align-items-center gap-2">
+              <div style="width:90px;height:7px;background:#e2e8f0;border-radius:999px;overflow:hidden;">
+                <div style="width:{{ [pct,100]|min }}%;height:100%;background:linear-gradient(90deg,#6366f1,#a855f7);border-radius:999px;"></div>
+              </div>
+              <small class="text-muted fw-semibold">{{ pct }}%</small>
+            </div>
+          </td>
+          <td>
+            <span class="badge bg-success-subtle text-success border border-success px-2 py-1 rounded-pill">
+              <i class="fas fa-key me-1"></i> Configured
+            </span>
+          </td>
+          <td class="text-end">
+            <div class="d-inline-flex gap-2">
+              <!-- Enter Dept Portal Button -->
+              <a href="{{ url_for('department_login') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1" target="_blank" title="Open Department Portal">
+                <i class="fas fa-arrow-right-to-bracket me-1"></i> Dept Portal
+              </a>
+
+              <!-- Edit Modal Trigger -->
+              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1"
+                      data-bs-toggle="modal" data-bs-target="#editDeptModal{{ d.id }}">
+                <i class="fas fa-pen-to-square"></i> Edit
+              </button>
+
+              <!-- Delete Department -->
+              <form method="POST" action="{{ url_for('admin_departments') }}"
+                    onsubmit="return confirm('Delete department {{ d.name }}? All associated voters and candidates will be affected.');" class="d-inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="dept_action" value="delete">
+                <input type="hidden" name="dept_id" value="{{ d.id }}">
+                <button class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </div>
+
+            <!-- Edit Department Modal -->
+            <div class="modal fade text-start" id="editDeptModal{{ d.id }}" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <form method="POST" action="{{ url_for('admin_departments') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="dept_action" value="edit">
+                    <input type="hidden" name="dept_id" value="{{ d.id }}">
+
+                    <div class="modal-header">
+                      <h5 class="modal-title fw-bold"><i class="fas fa-building-columns text-primary me-2"></i>Edit {{ d.name }}</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label class="form-label small fw-semibold">Department Name</label>
+                        <input name="dept_name" value="{{ d.name }}" class="form-control" required>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label small fw-semibold">Department Code</label>
+                        <input name="dept_code" value="{{ d.code }}" class="form-control" required style="text-transform:uppercase">
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label small fw-semibold">Total Voter Seat Capacity</label>
+                        <input name="total_students" type="number" value="{{ d.total_students }}" class="form-control" required min="1">
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label small fw-semibold">Update Coordinator Password</label>
+                        <input name="coordinator_password" type="text" class="form-control" placeholder="Leave empty to keep existing password">
+                        <small class="text-muted">Enter a new password if resetting credentials for this department.</small>
+                      </div>
+                    </div>
+
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                      <button type="submit" class="btn btn-primary rounded-pill px-4">Save Changes</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No departments registered.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- DEPARTMENT-WISE DIRECTORY BREAKDOWN CARDS -->
+<div class="card p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold mb-0">
+      <i class="fas fa-layer-group text-primary me-2"></i>Academic Departments Directory &amp; Governance Link
+    </h5>
+    <small class="text-muted">Quick access to each department's independent voting and candidate operations</small>
+  </div>
+
+  <div class="row g-3">
+    {% for d in departments %}
+    <div class="col-md-6 col-lg-4">
+      <div class="dept-mini-card">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="dept-badge">{{ d.code }}</span>
+          <span class="badge bg-light text-muted border">Seats: {{ d.total_students }}</span>
+        </div>
+        <h6 class="fw-bold mb-1">{{ d.name }}</h6>
+        <div class="small text-muted mb-3">Enrolled: <strong>{{ d.enrolled_students }}</strong> / {{ d.total_students }} voters</div>
+
+        {% set fill = ((d.enrolled_students / d.total_students * 100) | round(0) | int) if d.total_students > 0 else 0 %}
+        <div class="progress mb-3" style="height: 6px;">
+          <div class="progress-bar bg-primary" role="progressbar" style="width: {{ [fill,100]|min }}%;"></div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <small class="text-success"><i class="fas fa-check-circle"></i> Active</small>
+          <a href="{{ url_for('department_login') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3" target="_blank">
+            Coordinator Portal →
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ELECTION OPERATIONS & LAUNCH CONSOLE -->
+<div class="card p-4 mb-4 mt-4">
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#059669,#10b981);color:white;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">
+        <i class="fas fa-landmark"></i>
+      </div>
+      <div>
+        <h5 class="fw-bold mb-0">Campus Election Operations &amp; Launch Console</h5>
+        <small class="text-muted">Launch class level, departmental, or campus-wide council elections and oversee active rounds</small>
+      </div>
+    </div>
+    <span class="badge bg-success-subtle text-success border border-success px-3 py-2 rounded-pill">
+      {{ elections|length }} Total Election Rounds
+    </span>
+  </div>
+
+  <!-- Launch Election Form -->
+  <form method="POST" action="{{ url_for('admin') }}" class="p-3 mb-4 rounded-4 border bg-light">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="create_election" value="1">
+
+    <h6 class="fw-bold mb-3 text-primary"><i class="fas fa-rocket me-1"></i> Launch New Election Round</h6>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold">Election Title <span class="text-danger">*</span></label>
+        <input name="election_name" class="form-control form-control-sm" placeholder="e.g. Campus Student Council 2026" required>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small fw-semibold">Governance Stage <span class="text-danger">*</span></label>
+        <select name="stage" class="form-select form-select-sm" required>
+          <option value="1">Stage 1: Class Representative (CR)</option>
+          <option value="2">Stage 2: Department Level Representative</option>
+          <option value="3" selected>Stage 3: Student Council (College-Wide)</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small fw-semibold">Target Department</label>
+        <select name="department" class="form-select form-select-sm">
+          <option value="">-- Campus-Wide (All Departments) --</option>
+          {% for d in departments %}
+          <option value="{{ d.name }}">{{ d.name }} ({{ d.code }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small fw-semibold">Duration (Minutes)</label>
+        <input name="duration" type="number" min="1" value="2880" class="form-control form-control-sm" required>
+      </div>
+      <div class="col-md-10">
+        <label class="form-label small fw-semibold">Description / Guidelines</label>
+        <input name="description" class="form-control form-control-sm" placeholder="Brief election instructions or objectives for student voters...">
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-success btn-sm w-100 rounded-pill fw-semibold" style="background:linear-gradient(135deg,#059669,#10b981);border:none;">
+          <i class="fas fa-check-circle me-1"></i> Launch Round
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Elections Roster Table -->
+  <h6 class="fw-bold mb-3"><i class="fas fa-list-check me-2 text-primary"></i>Election Rounds Roster</h6>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Stage</th>
+          <th>Election Name</th>
+          <th>Department Scope</th>
+          <th>Candidates</th>
+          <th>Votes Cast</th>
+          <th>Status</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in elections %}
+        <tr>
+          <td>
+            <span class="badge bg-primary-subtle text-primary border border-primary rounded-pill px-2 py-1">
+              {{ e.stage_info.badge or ('Stage ' ~ e.stage) }}
+            </span>
+          </td>
+          <td>
+            <div class="fw-bold">{{ e.name }}</div>
+            <small class="text-muted">{{ e.category_name }}</small>
+          </td>
+          <td>
+            {% if e.department %}
+              <span class="badge bg-info-subtle text-info border border-info rounded-pill px-2 py-1">
+                <i class="fas fa-building-columns me-1"></i>{{ e.department }}
+              </span>
+            {% else %}
+              <span class="badge bg-secondary-subtle text-secondary border border-secondary rounded-pill px-2 py-1">
+                <i class="fas fa-globe me-1"></i> Campus-Wide
+              </span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="fw-semibold">{{ e.candidates|length }}</span> Candidates
+          </td>
+          <td>
+            <span class="fw-semibold text-primary">{{ e.votes_count or 0 }}</span>
+          </td>
+          <td>
+            {% if e.is_active %}
+              <span class="badge bg-success rounded-pill px-3 py-1">
+                <i class="fas fa-circle-play me-1"></i> Active
+              </span>
+            {% else %}
+              <span class="badge bg-secondary rounded-pill px-3 py-1">Concluded</span>
+            {% endif %}
+          </td>
+          <td class="text-end">
+            <div class="d-inline-flex gap-2">
+              <a href="{{ url_for('results', election_id=e.id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-2 py-1" target="_blank" title="View Results">
+                <i class="fas fa-chart-column"></i>
+              </a>
+              {% if e.is_active %}
+              <form method="POST" action="{{ url_for('admin') }}" class="d-inline" onsubmit="return confirm('Conclude election {{ e.name }}? Voting will end immediately.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="end_election_id" value="{{ e.id }}">
+                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1" title="End Election">
+                  <i class="fas fa-stop me-1"></i> Conclude
+                </button>
+              </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7" class="text-center text-muted py-4">No election rounds created yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

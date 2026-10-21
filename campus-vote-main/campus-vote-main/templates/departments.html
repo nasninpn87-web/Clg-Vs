@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Departments | VoteEase</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ede9fe 0%, #dbeafe 100%);
+    min-height: 100vh;
+  }
+  .top-nav {
+    background: rgba(15,23,42,0.95);
+    backdrop-filter: blur(12px);
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+  }
+  .nav-brand {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .nav-brand span {
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .nav-links a {
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: #fff; }
+  .hero-section {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+    padding: 60px 20px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-section h1 { font-size: 2.5rem; font-weight: 700; color: #fff; position: relative; }
+  .hero-section p { color: rgba(255,255,255,0.7); position: relative; }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(99,102,241,0.2);
+    border: 1px solid rgba(99,102,241,0.4);
+    color: #a5b4fc;
+    padding: 6px 18px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .main-wrapper {
+    max-width: 1100px;
+    margin: -40px auto 60px;
+    padding: 0 20px;
+    position: relative;
+    z-index: 10;
+  }
+  .glass-card {
+    background: rgba(255,255,255,0.97);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(99,102,241,0.12), 0 4px 20px rgba(0,0,0,0.06);
+    padding: 36px;
+    border: 1px solid rgba(255,255,255,0.8);
+    margin-bottom: 24px;
+  }
+  .dept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 24px;
+  }
+  .dept-card {
+    background: linear-gradient(135deg, #f8faff, #f5f3ff);
+    border: 1px solid #e0e7ff;
+    border-radius: 20px;
+    padding: 24px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .dept-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    border-radius: 4px 0 0 4px;
+  }
+  .dept-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(99,102,241,0.15);
+    border-color: #c4b5fd;
+  }
+  .dept-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 14px;
+  }
+  .dept-code {
+    display: inline-block;
+    background: #ede9fe;
+    color: #6d28d9;
+    border-radius: 8px;
+    padding: 3px 10px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .dept-name { font-size: 1.05rem; font-weight: 700; color: #1e293b; margin-bottom: 6px; }
+  .dept-stats {
+    display: flex;
+    gap: 16px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .dept-stat { text-align: center; flex: 1; }
+  .dept-stat-val { font-size: 1.3rem; font-weight: 700; color: #6366f1; }
+  .dept-stat-label { font-size: 0.72rem; color: #94a3b8; font-weight: 500; }
+  .attendance-bar {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+  .attendance-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #6366f1, #a855f7);
+    border-radius: 999px;
+    transition: width 1s ease-out;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .section-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a class="nav-brand" href="{{ url_for('home') }}">
+    <i class="fas fa-vote-yea"></i>
+    <span>VoteEase</span>
+  </a>
+  <div class="nav-links">
+    <a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
+    <a href="{{ url_for('department_login') }}" style="color:#fde047; font-weight:600;"><i class="fas fa-building-columns"></i> Dept Portal</a>
+    <a href="{{ url_for('login') }}"><i class="fas fa-user-check"></i> Voter Login</a>
+    <a href="{{ url_for('results') }}"><i class="fas fa-chart-column"></i> Results</a>
+    <a href="{{ url_for('candidate_register') }}"><i class="fas fa-user-tie"></i> Run for Election</a>
+    <a href="{{ url_for('admin') }}"><i class="fas fa-shield-halved"></i> Admin</a>
+  </div>
+</nav>
+
+<div class="hero-section">
+  <div class="hero-badge">
+    <i class="fas fa-building-columns"></i>
+    ACADEMIC DEPARTMENTS
+  </div>
+  <h1>Campus Departments</h1>
+  <p>Browse all registered academic departments, voter enrollment details, and departmental elections.</p>
+</div>
+
+<div class="main-wrapper">
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for cat, m in messages %}
+      <div class="alert alert-{{ cat if cat != 'message' else 'info' }} alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
+        {{ m | safe }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- Dept Coordinator Banner & Quick Actions -->
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 p-3 mb-4 rounded-4 shadow-sm border" style="background:linear-gradient(135deg, #eef2ff, #fdf4ff);">
+    <div class="d-flex align-items-center gap-3">
+      <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">
+        <i class="fas fa-graduation-cap"></i>
+      </div>
+      <div>
+        <strong class="d-block text-dark" style="font-size:1.05rem;">Department Management & Operations</strong>
+        <small class="text-muted">Register voters, nominate candidates, and oversee voting for each academic department.</small>
+      </div>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn btn-primary rounded-pill px-3 btn-sm fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#deptVoterModal" onclick="prepareVoterModal('')" style="background:linear-gradient(135deg,#4f46e5,#6366f1);border:none;">
+        <i class="fas fa-user-plus me-1"></i> + Add Voter
+      </button>
+      <button class="btn btn-success rounded-pill px-3 btn-sm fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#deptCandidateModal" onclick="prepareCandidateModal('')" style="background:linear-gradient(135deg,#059669,#10b981);border:none;">
+        <i class="fas fa-user-tie me-1"></i> + Add Candidate
+      </button>
+      <a href="{{ url_for('department_login') }}" class="btn btn-outline-dark rounded-pill px-3 btn-sm fw-semibold">
+        <i class="fas fa-right-to-bracket me-1"></i> Coordinator Portal
+      </a>
+    </div>
+  </div>
+
+  <div class="glass-card">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <div class="section-header mb-0">
+        <div class="section-icon"><i class="fas fa-building-columns"></i></div>
+        <div>
+          <h4 class="mb-0 fw-bold" style="color:#1e293b;">All Departments</h4>
+          <small class="text-muted">{{ departments|length }} departments registered in the campus system</small>
+        </div>
+      </div>
+      <div class="text-muted small">
+        <i class="fas fa-circle-info me-1 text-primary"></i> Click any department card to add voters or candidates
+      </div>
+    </div>
+
+    {% if departments %}
+    <div class="dept-grid">
+      {% for dept in departments %}
+      <div class="dept-card">
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="dept-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <span class="dept-code">{{ dept.code }}</span>
+        </div>
+        <div class="dept-name">{{ dept.name }}</div>
+        <div class="attendance-bar">
+          {% set fill_pct = [(dept.enrolled_students / dept.total_students * 100) | int, 100] | min if dept.total_students > 0 else 0 %}
+          <div class="attendance-fill" style="width: {{ fill_pct }}%;"></div>
+        </div>
+        <div class="dept-stats">
+          <div class="dept-stat">
+            <div class="dept-stat-val">{{ dept.enrolled_students }}</div>
+            <div class="dept-stat-label">Enrolled</div>
+          </div>
+          <div class="dept-stat">
+            <div class="dept-stat-val">{{ dept.total_students }}</div>
+            <div class="dept-stat-label">Total Seats</div>
+          </div>
+          <div class="dept-stat">
+            {% if dept.total_students > 0 %}
+              <div class="dept-stat-val">{{ ((dept.enrolled_students / dept.total_students) * 100) | round(0) | int }}%</div>
+            {% else %}
+              <div class="dept-stat-val">0%</div>
+            {% endif %}
+            <div class="dept-stat-label">Filled</div>
+          </div>
+        </div>
+
+        <!-- ACTION BUTTONS IN DEPARTMENT CARD -->
+        <div class="mt-3 pt-3 border-top d-flex gap-2">
+          <button type="button" class="btn btn-sm btn-outline-primary flex-fill rounded-pill fw-semibold"
+                  onclick="prepareVoterModal('{{ dept.name }}')" data-bs-toggle="modal" data-bs-target="#deptVoterModal"
+                  title="Add voter to {{ dept.name }}">
+            <i class="fas fa-user-plus me-1"></i> + Voter
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-success flex-fill rounded-pill fw-semibold"
+                  onclick="prepareCandidateModal('{{ dept.name }}')" data-bs-toggle="modal" data-bs-target="#deptCandidateModal"
+                  title="Nominate candidate for {{ dept.name }}">
+            <i class="fas fa-user-tie me-1"></i> + Candidate
+          </button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+      <div class="text-center text-muted py-5">
+        <i class="fas fa-building-columns fa-3x mb-3 d-block opacity-25"></i>
+        No departments registered yet. Contact the admin.
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="text-center">
+    <a href="{{ url_for('home') }}" class="text-decoration-none text-muted small">
+      <i class="fas fa-arrow-left me-1"></i> Back to Home
+    </a>
+  </div>
+</div>
+
+<!-- ==================== MODAL: ADD VOTER TO DEPARTMENT ==================== -->
+<div class="modal fade" id="deptVoterModal" tabindex="-1" aria-labelledby="deptVoterModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white rounded-top-4" style="background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;">
+        <h5 class="modal-title fw-bold" id="deptVoterModalLabel">
+          <i class="fas fa-user-plus me-2"></i>Add Voter to Department
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{{ url_for('public_add_dept_voter') }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">Target Department <span class="text-danger">*</span></label>
+            <select name="department" id="voterDeptSelect" class="form-select form-select-lg" required>
+              <option value="" disabled selected>-- Select Department --</option>
+              {% for d in departments %}
+              <option value="{{ d.name }}">{{ d.name }} ({{ d.code }})</option>
+              {% endfor %}
+            </select>
+            <small class="text-muted">The department the student voter belongs to.</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-primary">Role / Electoral Privilege</label>
+            <div class="p-2 bg-light rounded border d-flex align-items-center justify-content-between">
+              <span class="badge bg-primary rounded-pill px-3 py-1">Student Elector</span>
+              <small class="text-muted">Enrolled voting member</small>
+            </div>
+            <input type="hidden" name="role" value="Student Elector">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">College ID / Voter ID <span class="text-danger">*</span></label>
+            <input type="text" name="college_id" id="voterCollegeId" class="form-control" placeholder="e.g. 0905CS241099" required style="text-transform:uppercase;" oninput="validateVoterInput()">
+            <div id="voterDeptError" class="alert alert-danger py-2 px-3 mt-2 small d-none" style="border-radius:10px;">
+              <i class="fas fa-circle-exclamation me-1"></i> <span id="voterDeptErrorMsg"></span>
+            </div>
+            <small class="text-muted" id="voterCidHint">Must correspond to the selected department.</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">Class / Section <span class="text-danger">*</span></label>
+            <input type="text" name="class_section" class="form-control" placeholder="e.g. CSE-A, 3rd Year Sec B" required style="text-transform:uppercase;">
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold text-dark">Mobile No</label>
+              <input type="tel" name="mobile" class="form-control" placeholder="e.g. 9876543210">
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold text-dark">Email ID</label>
+              <input type="email" name="email" class="form-control" placeholder="voter@campus.edu">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">Voter Photo (Optional)</label>
+            <input type="file" name="photo" class="form-control" accept="image/*">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">Voter Password <span class="text-danger">*</span></label>
+            <input type="password" name="password" class="form-control" placeholder="Create a password for this voter" required>
+            <small class="text-muted">Voter will use this password on the Voter Login page.</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">Attendance Percentage (%)</label>
+            <input type="number" name="attendance_pct" class="form-control" min="0" max="100" step="0.1" value="85.0" required>
+            <small class="text-muted">Minimum 75% typically required for ballot eligibility.</small>
+          </div>
+        </div>
+        <div class="modal-footer border-0 p-4 pt-0">
+          <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" id="voterSubmitBtn" class="btn btn-primary rounded-pill px-4 fw-semibold" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border:none;">
+            <i class="fas fa-check me-1"></i> Register Voter
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: ADD CANDIDATE TO DEPARTMENT ==================== -->
+<div class="modal fade" id="deptCandidateModal" tabindex="-1" aria-labelledby="deptCandidateModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header text-white rounded-top-4" style="background: linear-gradient(135deg, #059669, #10b981) !important;">
+        <h5 class="modal-title fw-bold" id="deptCandidateModalLabel">
+          <i class="fas fa-user-tie me-2"></i>Nominate Department Candidate
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{{ url_for('public_add_dept_candidate') }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">Department <span class="text-danger">*</span></label>
+            <select name="department" id="candDeptSelect" class="form-select" required>
+              <option value="" disabled selected>-- Select Department --</option>
+              {% for d in departments %}
+              <option value="{{ d.name }}">{{ d.name }} ({{ d.code }})</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">Election Stage / Tier <span class="text-danger">*</span></label>
+            <select name="election_id" class="form-select" required>
+              {% if elections %}
+                {% for e in elections %}
+                <option value="{{ e.id }}">{{ e.stage_info.badge or ('Stage ' ~ e.stage) }}: {{ e.name }}</option>
+                {% endfor %}
+              {% else %}
+                <option value="1">Stage 1: Department / Class Representative Election</option>
+              {% endif %}
+            </select>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-sm-7">
+              <label class="form-label fw-semibold text-dark">Candidate Full Name <span class="text-danger">*</span></label>
+              <input type="text" name="candidate_name" class="form-control" placeholder="e.g. Alex Johnson" required>
+            </div>
+            <div class="col-sm-5">
+              <label class="form-label fw-semibold text-dark">College ID <span class="text-danger">*</span></label>
+              <input type="text" name="college_id" id="candCollegeId" class="form-control" placeholder="e.g. 0905CS241012" style="text-transform:uppercase;" required oninput="validateCandInput()">
+              <small class="text-muted" style="font-size:0.75rem;">Must be enrolled in department.</small>
+            </div>
+          </div>
+
+          <div id="candDeptError" class="alert alert-danger py-2 px-3 mb-3 small d-none" style="border-radius:10px;">
+            <i class="fas fa-circle-exclamation me-1"></i> <span id="candDeptErrorMsg"></span>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">Contesting Position Title</label>
+            <input type="text" name="position_title" class="form-control" placeholder="e.g. Class Representative (CR), Dept Secretary">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">Manifesto / Vision</label>
+            <textarea name="manifesto" class="form-control" rows="2" placeholder="Brief statement on election campaign goals..."></textarea>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label fw-semibold text-dark">Candidate Photo (Optional)</label>
+            <input type="file" name="photo" class="form-control" accept="image/*">
+          </div>
+        </div>
+        <div class="modal-footer border-0 p-4 pt-0">
+          <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" id="candSubmitBtn" class="btn btn-success rounded-pill px-4 fw-semibold" style="background:linear-gradient(135deg,#059669,#10b981);border:none;">
+            <i class="fas fa-check me-1"></i> Register Candidate
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+const DEPT_MAP = {
+  'Computer Science': ['CS', 'CSE', 'COMP'],
+  'Electronics & Communication': ['EC', 'ECE', 'ETC'],
+  'Mechanical Engineering': ['ME', 'MECH'],
+  'Civil Engineering': ['CE', 'CIVIL'],
+  'Information Technology': ['IT', 'INFO'],
+  'Electrical Engineering': ['EE', 'EEE', 'ELEC'],
+  'Artificial Intelligence': ['AI', 'AIML', 'AIDS']
+};
+
+function getDeptForCid(cid) {
+  if (!cid) return null;
+  cid = cid.toUpperCase();
+  for (const [dept, aliases] of Object.entries(DEPT_MAP)) {
+    for (const a of aliases) {
+      if (cid.includes(a)) return dept;
+    }
+  }
+  return null;
+}
+
+function validateVoterInput() {
+  const sel = document.getElementById('voterDeptSelect');
+  const dept = sel ? sel.value : '';
+  const cidInput = document.getElementById('voterCollegeId');
+  const errBox = document.getElementById('voterDeptError');
+  const errMsg = document.getElementById('voterDeptErrorMsg');
+  const submitBtn = document.getElementById('voterSubmitBtn');
+  if (!dept || !cidInput || !cidInput.value.trim()) {
+    if (errBox) errBox.classList.add('d-none');
+    if (submitBtn) submitBtn.disabled = false;
+    return;
+  }
+  const cid = cidInput.value.trim().toUpperCase();
+  const detected = getDeptForCid(cid);
+  const aliases = DEPT_MAP[dept] || [];
+  const matches = aliases.some(a => cid.includes(a));
+  if (!matches) {
+    errBox.classList.remove('d-none');
+    if (detected) {
+      errMsg.textContent = `❌ Error: College ID '${cid}' corresponds to ${detected}, not ${dept}. Voters can only be added to their corresponding department.`;
+    } else {
+      errMsg.textContent = `❌ Error: College ID '${cid}' does not correspond to ${dept}. ID must contain department code (${aliases.join(', ')}).`;
+    }
+    if (submitBtn) submitBtn.disabled = true;
+  } else {
+    errBox.classList.add('d-none');
+    if (submitBtn) submitBtn.disabled = false;
+  }
+}
+
+function validateCandInput() {
+  const sel = document.getElementById('candDeptSelect');
+  const dept = sel ? sel.value : '';
+  const cidInput = document.getElementById('candCollegeId');
+  const errBox = document.getElementById('candDeptError');
+  const errMsg = document.getElementById('candDeptErrorMsg');
+  const submitBtn = document.getElementById('candSubmitBtn');
+  if (!dept || !cidInput || !cidInput.value.trim()) {
+    if (errBox) errBox.classList.add('d-none');
+    if (submitBtn) submitBtn.disabled = false;
+    return;
+  }
+  const cid = cidInput.value.trim().toUpperCase();
+  const detected = getDeptForCid(cid);
+  const aliases = DEPT_MAP[dept] || [];
+  const matches = aliases.some(a => cid.includes(a));
+  if (!matches) {
+    errBox.classList.remove('d-none');
+    if (detected) {
+      errMsg.textContent = `❌ Error: College ID '${cid}' corresponds to ${detected}, not ${dept}. Candidates can only be added to their corresponding department.`;
+    } else {
+      errMsg.textContent = `❌ Error: College ID '${cid}' does not correspond to ${dept}. ID must contain department code (${aliases.join(', ')}).`;
+    }
+    if (submitBtn) submitBtn.disabled = true;
+  } else {
+    errBox.classList.add('d-none');
+    if (submitBtn) submitBtn.disabled = false;
+  }
+}
+
+function prepareVoterModal(deptName) {
+  const sel = document.getElementById('voterDeptSelect');
+  if (deptName && sel) {
+    sel.value = deptName;
+  }
+  validateVoterInput();
+}
+function prepareCandidateModal(deptName) {
+  const sel = document.getElementById('candDeptSelect');
+  if (deptName && sel) {
+    sel.value = deptName;
+  }
+  validateCandInput();
+}
+
+document.getElementById('voterDeptSelect')?.addEventListener('change', validateVoterInput);
+document.getElementById('candDeptSelect')?.addEventListener('change', validateCandInput);
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

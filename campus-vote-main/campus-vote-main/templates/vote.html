@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Vote | {{ election.name }}</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+  background: #ede9fe;
+  font-family: 'Poppins', sans-serif;
+}
+
+.card {
+  border-radius: 18px;
+  transition: 0.25s;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+}
+
+.card.selected {
+  border: 3px solid #22c55e;
+  box-shadow: 0 0 18px rgba(34,197,94,0.6);
+}
+
+.card.blur {
+  opacity: 0.35;
+}
+
+.timer-bar {
+  height: 12px;
+  background: #ddd;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.timer-fill {
+  height: 100%;
+  background: linear-gradient(90deg,#22c55e,#16a34a);
+  width: 100%;
+  transition: width 1s linear;
+}
+
+.btn-vote {
+  background: linear-gradient(90deg,#22c55e,#16a34a);
+  color: white;
+  border: none;
+  font-size: 1.2rem;
+  padding: 12px 40px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.btn-vote:disabled {
+  background: gray;
+}
+</style>
+</head>
+
+<body>
+<div class="container py-4">
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <a href="{{ url_for('vote_hub') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+      <i class="fas fa-arrow-left"></i> All Election Stages
+    </a>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    <span class="badge bg-light text-primary border px-3 py-2 rounded-pill">
+      Voter: <strong>{{ student.college_id }}</strong>
+    </span>
+    <a href="{{ url_for('logout') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3">Logout</a>
+  </div>
+</div>
+
+<div class="text-center mb-3">
+  <span class="badge bg-primary-subtle text-primary border border-primary px-3 py-1 rounded-pill mb-2">
+    {{ election.stage_info.badge }}: {{ election.category_name }}
+  </span>
+  <h2 class="fw-bold">{{ election.name }}</h2>
+  <p class="text-muted small">{{ election.description or "Select your preferred candidate below and submit your secret ballot." }}</p>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}
+    <div class="alert alert-{{ cat }} py-2 text-center">{{ msg }}</div>
+  {% endfor %}
+{% endwith %}
+
+{% if election.end_time %}
+<div class="card p-3 mb-4 text-center">
+  <div class="mb-1 fw-semibold">⏱ Time Remaining</div>
+  <div class="mb-2 text-danger fw-bold" id="timeText">--:--</div>
+  <div class="timer-bar">
+    <div id="timerFill" class="timer-fill"></div>
+  </div>
+</div>
+{% endif %}
+
+{% if has_voted %}
+<div class="card p-4 text-center">
+  <h4 class="text-success"><i class="fas fa-circle-check"></i> Ballot Already Recorded</h4>
+  <p class="text-muted mb-3">You have already cast your vote in this round.</p>
+  <div>
+    <a href="{{ url_for('vote_hub') }}" class="btn btn-primary rounded-pill px-4">
+      Vote in Other Election Rounds →
+    </a>
+  </div>
+</div>
+
+{% else %}
+
+<form method="POST" id="voteForm">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<div class="row justify-content-center">
+
+{% for c in candidates %}
+<div class="col-md-4 mb-4">
+<label style="width:100%;">
+<input type="radio" name="candidate" value="{{ c.id }}" style="position:absolute;opacity:0;pointer-events:none;">
+
+<div class="card p-3 text-center h-100 d-flex flex-column justify-content-between">
+  <div>
+    <div style="width:130px;height:130px;margin:auto;border-radius:50%;overflow:hidden;border:3px solid #c4b5fd;">
+      <img src="{{ url_for('static', filename='photos/' ~ (c.photo or 'default.png')) }}"
+           style="width:100%;height:100%;object-fit:cover;">
+    </div>
+    <h5 class="mt-3 fw-bold mb-1">{{ c.name }}</h5>
+
+    {% if c.position_title %}
+      <div class="mb-1">
+        <span class="badge px-2 py-1 rounded-pill small d-inline-block"
+              style="background: linear-gradient(135deg,#6366f1,#a855f7); color:white; font-size:0.72rem; letter-spacing:0.3px;">
+          <i class="fas fa-medal me-1"></i>{{ c.position_title }}
+        </span>
+      </div>
+    {% endif %}
+
+    {% if c.department %}
+      <div class="mb-2">
+        <span class="badge bg-light text-secondary border px-2 py-1 rounded-pill" style="font-size:0.7rem;">
+          <i class="fas fa-building-columns me-1"></i>{{ c.department }}
+        </span>
+      </div>
+    {% endif %}
+
+    {% if c.promotion_status %}
+      <span class="badge bg-warning-subtle text-dark border border-warning px-2 py-1 rounded-pill small mb-2 d-inline-block">
+        <i class="fas fa-star text-warning"></i> {{ c.promotion_status }}
+      </span>
+    {% endif %}
+
+    {% if c.manifesto %}
+      <p class="small text-muted mt-2 mb-0" style="font-size: 12px; line-height: 1.5;">
+        <em>"{{ c.manifesto }}"</em>
+      </p>
+    {% endif %}
+  </div>
+
+  <div class="mt-3">
+    <span class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 select-hint">Click to Select</span>
+  </div>
+</div>
+
+</label>
+</div>
+{% endfor %}
+
+</div>
+
+<div class="text-center mt-3">
+  <button id="voteBtn" class="btn-vote" disabled>Cast Ballot in this Round</button>
+</div>
+</form>
+
+{% endif %}
+
+<div class="text-center mt-4">
+  <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
+</div>
+
+</div>
+
+<script>
+const cardLabels = document.querySelectorAll("label:has(input[name='candidate'])");
+const voteBtn = document.getElementById("voteBtn");
+
+document.querySelectorAll("label").forEach(label => {
+  const radio = label.querySelector("input[name='candidate']");
+  if (!radio) return;
+
+  label.addEventListener("click", () => {
+    radio.checked = true;
+    document.querySelectorAll(".card").forEach(c => {
+      c.classList.remove("selected", "blur");
+    });
+
+    const card = label.querySelector(".card");
+    if (card) {
+      card.classList.add("selected");
+    }
+
+    document.querySelectorAll(".card").forEach(c => {
+      if (c !== card) c.classList.add("blur");
+    });
+
+    if (voteBtn) {
+      voteBtn.disabled = false;
+      voteBtn.style.opacity = "1";
+      voteBtn.style.cursor = "pointer";
+    }
+  });
+
+  radio.addEventListener("change", () => {
+    label.click();
+  });
+});
+</script>
+
+{% if election.end_time %}
+<script>
+const endTime = new Date("{{ election.end_time }}").getTime();
+const startTime = new Date("{{ election.start_time }}").getTime();
+const total = endTime - startTime;
+
+const timeText = document.getElementById("timeText");
+const fill = document.getElementById("timerFill");
+
+setInterval(()=>{
+  const now = new Date().getTime();
+  const left = endTime - now;
+
+  if(left <= 0){
+    timeText.innerText = "00:00";
+    fill.style.width = "0%";
+    location.reload();
+    return;
+  }
+
+  const m = Math.floor(left/60000);
+  const s = Math.floor((left%60000)/1000);
+  timeText.innerText =
+    String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+
+  fill.style.width = (left/total*100) + "%";
+},1000);
+</script>
+{% endif %}
+
+</body>
+</html>

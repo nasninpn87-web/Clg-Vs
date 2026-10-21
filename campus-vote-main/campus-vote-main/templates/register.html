@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voter Registration & Verification | VoteEase</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root {
+  --primary: #4f46e5;
+  --primary-dark: #3730a3;
+  --secondary: #9333ea;
+  --bg-gradient: linear-gradient(135deg, #ede9fe 0%, #dbeafe 50%, #fdf4ff 100%);
+}
+
+body {
+  background: var(--bg-gradient);
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  color: #1e293b;
+  padding: 30px 15px;
+}
+
+.top-bar-nav {
+  max-width: 960px;
+  margin: 0 auto 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-title span {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.reg-card {
+  background: #ffffff;
+  border-radius: 28px;
+  box-shadow: 0 25px 60px rgba(99, 102, 241, 0.12), 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  max-width: 960px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.card-hero {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4c1d95 100%);
+  color: white;
+  padding: 36px 40px;
+  position: relative;
+}
+
+.role-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(99, 102, 241, 0.25);
+  border: 1px solid rgba(165, 180, 252, 0.4);
+  color: #c7d2fe;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* Steps Progress Tracker */
+.steps-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 10px 24px;
+}
+.step-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.step-step.active {
+  color: #ffffff;
+  font-weight: 600;
+}
+.step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.step-step.active .step-num {
+  background: #6366f1;
+  color: white;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+}
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0 16px;
+}
+
+.form-body {
+  padding: 36px 40px;
+}
+
+.field-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-control, .form-select {
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 11px 16px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+.form-control:focus, .form-select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.input-icon-wrap {
+  position: relative;
+}
+.input-icon-wrap i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+.input-icon-wrap input, .input-icon-wrap select {
+  padding-left: 42px;
+}
+
+.role-badge-box {
+  background: #eef2ff;
+  border: 1.5px dashed #818cf8;
+  border-radius: 12px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.photo-preview-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  border: 2px dashed #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #f8fafc;
+  flex-shrink: 0;
+}
+.photo-preview-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border: none;
+  color: white;
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
+  transition: all 0.25s ease;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(79, 70, 229, 0.45);
+  color: white;
+}
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.footer-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+}
+.footer-nav a {
+  text-decoration: none;
+  color: #64748b;
+  font-weight: 500;
+}
+.footer-nav a:hover {
+  color: var(--primary);
+}
+</style>
+</head>
+
+<body>
+
+<div class="top-bar-nav">
+  <a href="{{ url_for('home') }}" class="brand-title">
+    <i class="fas fa-check-to-slot text-primary"></i>
+    <span>VoteEase</span>
+  </a>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+      <i class="fas fa-right-to-bracket me-1"></i> Voter Login
+    </a>
+    <a href="{{ url_for('candidate_register') }}" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+      <i class="fas fa-user-tie me-1"></i> Contest Election
+    </a>
+  </div>
+</div>
+
+<div class="reg-card">
+  <!-- HERO HEADER -->
+  <div class="card-hero">
+    <div class="role-pill">
+      <i class="fas fa-id-card-clip"></i>
+      ELECTORAL ENROLLMENT
+    </div>
+    <h2 class="fw-bold mb-1">Student Voter Registration</h2>
+    <p class="text-white-50 mb-0 small">
+      Enter your student credentials to receive your one-time verification OTP and activate your electoral ballot.
+    </p>
+
+    <!-- STEP PROGRESS -->
+    <div class="steps-track">
+      <div class="step-step active">
+        <div class="step-num">1</div>
+        <span>Confirm Voter Details</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-step">
+        <div class="step-num">2</div>
+        <span>OTP Verification</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-step">
+        <div class="step-num">3</div>
+        <span>Account Activated</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM BODY -->
+  <div class="form-body">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="alert alert-{{ cat if cat != 'message' else 'info' }} rounded-4 py-2 px-3 small mb-4" role="alert">
+            {{ msg | safe }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('register') }}" enctype="multipart/form-data" id="voterRegForm">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <!-- ROLE SPECIFICATION (STUDENT ELECTOR) -->
+      <div class="mb-4">
+        <label class="field-label text-primary">
+          <i class="fas fa-shield-halved"></i> Electoral Role / Privilege
+        </label>
+        <div class="role-badge-box">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary rounded-pill px-3 py-2 fs-6">
+              <i class="fas fa-user-check me-1"></i> Student Elector
+            </span>
+            <small class="text-muted">Granted official ballot voting rights upon OTP verification.</small>
+          </div>
+          <span class="badge bg-success-subtle text-success border border-success rounded-pill px-3 py-1 small">
+            Verified Elector Status
+          </span>
+        </div>
+        <input type="hidden" name="role" value="Student Elector">
+      </div>
+
+      <div class="row g-3 mb-3">
+        <!-- VOTER COLLEGE ID -->
+        <div class="col-md-6">
+          <label class="field-label">
+            <i class="fas fa-id-card"></i> Voter ID / College ID <span class="text-danger">*</span>
+          </label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-barcode"></i>
+            <input type="text" name="college_id" id="voterRegCid" class="form-control"
+                   placeholder="e.g. 0905CS241099" required style="text-transform:uppercase;"
+                   oninput="validateVoterReg()">
+          </div>
+          <small class="text-muted" style="font-size:0.75rem;">Must correspond to your academic department.</small>
+        </div>
+
+        <!-- DEPARTMENT -->
+        <div class="col-md-6">
+          <label class="field-label">
+            <i class="fas fa-building-columns"></i> Department <span class="text-danger">*</span>
+          </label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-university"></i>
+            <select name="department" id="voterRegDept" class="form-select" required onchange="validateVoterReg()">
+              <option value="" disabled selected>-- Select Academic Department --</option>
+              {% for dept in departments %}
+                <option value="{{ dept }}">{{ dept }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <small class="text-muted" style="font-size:0.75rem;">Must match your enrolled department.</small>
+        </div>
+      </div>
+
+      <!-- Real-time Department Validation Alert Box -->
+      <div id="voterRegError" class="alert alert-danger py-2 px-3 small rounded-3 d-none mb-3">
+        <i class="fas fa-circle-exclamation me-1"></i> <span id="voterRegErrorMsg"></span>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <!-- CLASS / SECTION -->
+        <div class="col-md-6">
+          <label class="field-label">
+            <i class="fas fa-chalkboard-user"></i> Class / Section <span class="text-danger">*</span>
+          </label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-layer-group"></i>
+            <input type="text" name="class_section" id="voterClassSection" class="form-control"
+                   placeholder="e.g. CSE-A, 3rd Year Sec B" required style="text-transform:uppercase;">
+          </div>
+          <small class="text-muted" style="font-size:0.75rem;">Your academic division / batch section.</small>
+        </div>
+
+        <!-- ATTENDANCE PERCENTAGE -->
+        <div class="col-md-6">
+          <label class="field-label">
+            <i class="fas fa-chart-line"></i> Attendance Record (%) <span class="text-danger">*</span>
+          </label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-percent"></i>
+            <input type="number" name="attendance_pct" class="form-control"
+                   placeholder="85.0" min="0" max="100" step="0.1" value="85.0" required>
+          </div>
+          <small class="text-muted" style="font-size:0.75rem;">Minimum 75% recommended for student leadership.</small>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <!-- MOBILE NUMBER FOR OTP -->
+        <div class="col-md-6">
+          <label class="field-label">
+            <i class="fas fa-mobile-screen"></i> Mobile No for OTP <span class="text-danger">*</span>
+          </label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-phone"></i>
+            <input type="tel" name="mobile" id="voterMobile" class="form-control"
+                   placeholder="e.g. 9876543210" required minlength="7" maxlength="15">
+          </div>
+          <small class="text-muted" style="font-size:0.75rem;">Used for simulated SMS delivery of your voter OTP.</small>
+        </div>
+
+        <!-- EMAIL ID -->
+        <div class="col-md-6">
+          <label class="field-label">
+            <i class="fas fa-envelope"></i> Email Address <span class="text-danger">*</span>
+          </label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-at"></i>
+            <input type="email" name="email" id="voterEmail" class="form-control"
+                   placeholder="e.g. elector@campus.edu" required>
+          </div>
+          <small class="text-muted" style="font-size:0.75rem;">Used for verification notice & electronic receipts.</small>
+        </div>
+      </div>
+
+      <!-- VOTER PHOTO OPTION -->
+      <div class="mb-3 p-3 rounded-3 bg-light border">
+        <label class="field-label text-dark mb-2">
+          <i class="fas fa-camera"></i> Voter Identity Photo Option (Optional)
+        </label>
+        <div class="d-flex align-items-center gap-3">
+          <div class="photo-preview-wrap" id="photoPreviewBox">
+            <i class="fas fa-user fa-2x text-muted opacity-50" id="photoPlaceholderIcon"></i>
+            <img src="" id="photoPreviewImg" class="d-none" alt="Preview">
+          </div>
+          <div class="flex-grow-1">
+            <input type="file" name="photo" id="voterPhotoInput" class="form-control form-control-sm"
+                   accept="image/*" onchange="previewVoterPhoto(this)">
+            <small class="text-muted" style="font-size:0.75rem;">
+              Upload your student portrait or ID card photo (JPG, PNG). If omitted, default avatar is assigned.
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASSWORDS -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label class="field-label">
+            <i class="fas fa-lock"></i> Create Voter Password <span class="text-danger">*</span>
+          </label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-key"></i>
+            <input type="password" name="password" id="voterPwd" class="form-control"
+                   placeholder="Minimum 6 characters" required minlength="6">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="field-label">
+            <i class="fas fa-lock"></i> Confirm Voter Password <span class="text-danger">*</span>
+          </label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-shield-check"></i>
+            <input type="password" name="confirm" id="voterConfirm" class="form-control"
+                   placeholder="Re-enter password" required minlength="6">
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBMIT BUTTON -->
+      <button type="submit" id="voterRegSubmitBtn" class="submit-btn">
+        <i class="fas fa-shield-halved"></i> Confirm Details &amp; Get OTP →
+      </button>
+
+      <!-- FOOTER LINKS -->
+      <div class="footer-nav">
+        <a href="{{ url_for('login') }}">
+          <i class="fas fa-arrow-left me-1"></i> Already registered? Log in here
+        </a>
+        <a href="{{ url_for('candidate_register') }}">
+          <i class="fas fa-user-tie me-1"></i> Stand for election as candidate →
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+const DEPT_MAP = {
+  'Computer Science': ['CS', 'CSE', 'COMP'],
+  'Electronics & Communication': ['EC', 'ECE', 'ETC'],
+  'Mechanical Engineering': ['ME', 'MECH'],
+  'Civil Engineering': ['CE', 'CIVIL'],
+  'Information Technology': ['IT', 'INFO'],
+  'Electrical Engineering': ['EE', 'EEE', 'ELEC'],
+  'Artificial Intelligence': ['AI', 'AIML', 'AIDS']
+};
+
+function getDeptForCid(cid) {
+  if (!cid) return null;
+  cid = cid.toUpperCase();
+  for (const [dept, aliases] of Object.entries(DEPT_MAP)) {
+    for (const a of aliases) {
+      if (cid.includes(a)) return dept;
+    }
+  }
+  return null;
+}
+
+function validateVoterReg() {
+  const cidInput = document.getElementById('voterRegCid');
+  const deptSelect = document.getElementById('voterRegDept');
+  const errBox = document.getElementById('voterRegError');
+  const errMsg = document.getElementById('voterRegErrorMsg');
+  const btn = document.getElementById('voterRegSubmitBtn');
+
+  if (!cidInput || !deptSelect) return;
+  const cid = cidInput.value.trim().toUpperCase();
+  const dept = deptSelect.value;
+
+  if (!cid || !dept) {
+    if (errBox) errBox.classList.add('d-none');
+    if (btn) btn.disabled = false;
+    return;
+  }
+
+  const detected = getDeptForCid(cid);
+  const aliases = DEPT_MAP[dept] || [];
+  const matches = aliases.some(a => cid.includes(a));
+
+  if (!matches) {
+    if (errBox) {
+      errBox.classList.remove('d-none');
+      if (errMsg) {
+        if (detected) {
+          errMsg.textContent = `❌ Department Mismatch: College ID '${cid}' corresponds to ${detected}, but you selected ${dept}. Voters can only be registered under their corresponding department.`;
+        } else {
+          errMsg.textContent = `❌ Department Mismatch: College ID '${cid}' does not match ${dept}. ID must contain department code (${aliases.join(', ')}).`;
+        }
+      }
+    }
+    if (btn) btn.disabled = true;
+  } else {
+    if (errBox) errBox.classList.add('d-none');
+    if (btn) btn.disabled = false;
+  }
+}
+
+function previewVoterPhoto(input) {
+  const previewImg = document.getElementById('photoPreviewImg');
+  const placeholderIcon = document.getElementById('photoPlaceholderIcon');
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      previewImg.src = e.target.result;
+      previewImg.classList.remove('d-none');
+      if (placeholderIcon) placeholderIcon.classList.add('d-none');
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+document.getElementById('voterRegForm')?.addEventListener('submit', function(e) {
+  const pwd = document.getElementById('voterPwd').value;
+  const confirm = document.getElementById('voterConfirm').value;
+  if (pwd !== confirm) {
+    e.preventDefault();
+    alert('Passwords do not match. Please re-enter.');
+  }
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

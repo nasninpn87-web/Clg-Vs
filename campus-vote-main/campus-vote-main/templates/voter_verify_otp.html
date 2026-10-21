@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voter OTP Verification | VoteEase</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root {
+  --primary: #4f46e5;
+  --primary-dark: #3730a3;
+  --secondary: #9333ea;
+  --bg-gradient: linear-gradient(135deg, #ede9fe 0%, #dbeafe 50%, #fdf4ff 100%);
+}
+
+body {
+  background: var(--bg-gradient);
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  color: #1e293b;
+  padding: 30px 15px;
+}
+
+.top-bar-nav {
+  max-width: 760px;
+  margin: 0 auto 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-title span {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.verify-card {
+  background: #ffffff;
+  border-radius: 28px;
+  box-shadow: 0 25px 60px rgba(99, 102, 241, 0.12), 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  max-width: 760px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.card-hero {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4c1d95 100%);
+  color: white;
+  padding: 36px 40px;
+  text-align: center;
+}
+
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(99, 102, 241, 0.25);
+  border: 1px solid rgba(165, 180, 252, 0.4);
+  color: #c7d2fe;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* Steps Tracker */
+.steps-track {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 20px;
+}
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #a5b4fc;
+}
+.step-item.done {
+  color: #86efac;
+}
+.step-item.active {
+  color: #ffffff;
+  font-weight: 600;
+}
+.step-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.step-item.done .step-circle {
+  background: #22c55e;
+  color: white;
+}
+.step-item.active .step-circle {
+  background: #6366f1;
+  color: white;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.7);
+}
+.step-divider {
+  width: 32px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.card-body-content {
+  padding: 36px 40px;
+}
+
+/* Confirmed Details Summary Card */
+.summary-box {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 22px 26px;
+  margin-bottom: 28px;
+}
+
+.avatar-large {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  object-fit: cover;
+  border: 2px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.info-item-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.info-item-val {
+  font-size: 0.95rem;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* OTP Boxes */
+.otp-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 24px 0;
+}
+.otp-input-cell {
+  width: 52px;
+  height: 60px;
+  font-size: 1.8rem;
+  text-align: center;
+  font-weight: 700;
+  color: #4f46e5;
+  border: 2px solid #cbd5e1;
+  border-radius: 14px;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+  font-family: 'Poppins', monospace;
+}
+.otp-input-cell:focus {
+  border-color: #6366f1;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+  outline: none;
+}
+
+.verify-btn {
+  background: linear-gradient(135deg, #059669, #10b981);
+  border: none;
+  color: white;
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+  transition: all 0.25s ease;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.verify-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(16, 185, 129, 0.45);
+  color: white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="top-bar-nav">
+  <a href="{{ url_for('home') }}" class="brand-title">
+    <i class="fas fa-check-to-slot text-primary"></i>
+    <span>VoteEase</span>
+  </a>
+  <a href="{{ url_for('register') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+    <i class="fas fa-arrow-left me-1"></i> Edit Details
+  </a>
+</div>
+
+<div class="verify-card">
+  <!-- HERO HEADER -->
+  <div class="card-hero">
+    <div class="hero-pill">
+      <i class="fas fa-shield-check"></i>
+      SECURITY STEP 2 OF 2
+    </div>
+    <h2 class="fw-bold mb-1">Verify Your OTP Code</h2>
+    <p class="text-white-50 mb-0 small">
+      Enter the 6-digit confirmation code generated for your mobile number &amp; student record.
+    </p>
+
+    <!-- STEP TRACKER -->
+    <div class="steps-track">
+      <div class="step-item done">
+        <div class="step-circle"><i class="fas fa-check"></i></div>
+        <span>Details Confirmed</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-item active">
+        <div class="step-circle">2</div>
+        <span>OTP Verification</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-item">
+        <div class="step-circle">3</div>
+        <span>Elector Activated</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body-content">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="alert alert-{{ cat if cat != 'message' else 'info' }} rounded-4 py-2 px-3 small mb-4" role="alert">
+            {{ msg | safe }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- CONFIRMED VOTER DETAILS SUMMARY CARD -->
+    <div class="summary-box">
+      <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom">
+        <img src="{{ url_for('static', filename='photos/' + voter_info.photo) }}"
+             onerror="this.src='{{ url_for('static', filename='photos/default.png') }}';"
+             class="avatar-large" alt="Voter Portrait">
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+            <h5 class="fw-bold mb-0 text-dark">{{ voter_info.college_id }}</h5>
+            <span class="badge bg-primary rounded-pill px-3 py-1">
+              <i class="fas fa-user-check me-1"></i> {{ voter_info.role or 'Student Elector' }}
+            </span>
+          </div>
+          <small class="text-muted">
+            <i class="fas fa-building-columns me-1"></i> {{ voter_info.department }}
+          </small>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-6 col-md-3">
+          <div class="info-item-label">Class / Section</div>
+          <div class="info-item-val text-primary">{{ voter_info.class_section }}</div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="info-item-label">Role</div>
+          <div class="info-item-val text-success">{{ voter_info.role or 'Student Elector' }}</div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="info-item-label">Mobile for OTP</div>
+          <div class="info-item-val">{{ voter_info.mobile }}</div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="info-item-label">Attendance</div>
+          <div class="info-item-val text-info">{{ voter_info.attendance_pct }}%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OTP ENTRY FORM -->
+    <form method="POST" action="{{ url_for('voter_verify_otp') }}" id="otpForm">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="otp" id="fullOtpInput">
+
+      <div class="text-center mb-2">
+        <label class="fw-bold text-dark fs-6">
+          <i class="fas fa-key text-primary me-1"></i> Enter 6-Digit Verification Code
+        </label>
+        <div class="text-muted small">Type or paste the OTP received above.</div>
+      </div>
+
+      <!-- 6 BOX INPUTS -->
+      <div class="otp-container">
+        <input type="text" maxlength="1" class="otp-input-cell" id="otp1" autofocus autocomplete="off" inputmode="numeric">
+        <input type="text" maxlength="1" class="otp-input-cell" id="otp2" autocomplete="off" inputmode="numeric">
+        <input type="text" maxlength="1" class="otp-input-cell" id="otp3" autocomplete="off" inputmode="numeric">
+        <input type="text" maxlength="1" class="otp-input-cell" id="otp4" autocomplete="off" inputmode="numeric">
+        <input type="text" maxlength="1" class="otp-input-cell" id="otp5" autocomplete="off" inputmode="numeric">
+        <input type="text" maxlength="1" class="otp-input-cell" id="otp6" autocomplete="off" inputmode="numeric">
+      </div>
+
+      <button type="submit" class="verify-btn mb-3">
+        <i class="fas fa-circle-check"></i> Confirm OTP &amp; Activate Voter Account
+      </button>
+
+      <div class="d-flex justify-content-between align-items-center text-muted small pt-3 border-top">
+        <span>Didn't get the OTP?</span>
+        <a href="{{ url_for('voter_resend_otp') }}" class="text-primary fw-semibold text-decoration-none">
+          <i class="fas fa-rotate-right me-1"></i> Resend Verification Code
+        </a>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<script>
+// Auto-focus and auto-advance OTP inputs
+const inputs = [
+  document.getElementById('otp1'),
+  document.getElementById('otp2'),
+  document.getElementById('otp3'),
+  document.getElementById('otp4'),
+  document.getElementById('otp5'),
+  document.getElementById('otp6')
+];
+
+inputs.forEach((input, idx) => {
+  input.addEventListener('input', (e) => {
+    const val = e.target.value;
+    if (val.length === 1 && idx < inputs.length - 1) {
+      inputs[idx + 1].focus();
+    }
+    syncOtp();
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && !input.value && idx > 0) {
+      inputs[idx - 1].focus();
+    }
+  });
+
+  // Handle paste full code into any box
+  input.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const pasted = (e.clipboardData || window.clipboardData).getData('text').trim();
+    if (/^\d{6}$/.test(pasted)) {
+      pasted.split('').forEach((char, i) => {
+        if (inputs[i]) inputs[i].value = char;
+      });
+      syncOtp();
+      inputs[5].focus();
+    }
+  });
+});
+
+function syncOtp() {
+  const code = inputs.map(i => i.value).join('');
+  document.getElementById('fullOtpInput').value = code;
+}
+
+document.getElementById('otpForm')?.addEventListener('submit', function(e) {
+  syncOtp();
+  const code = document.getElementById('fullOtpInput').value;
+  if (code.length < 6) {
+    e.preventDefault();
+    alert('Please enter all 6 digits of your verification OTP.');
+    inputs[code.length < 6 ? code.length : 0].focus();
+  }
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
